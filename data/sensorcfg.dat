@@ -1,0 +1,9 @@
+{
+    "type":"DHT22",
+    "unit":"F",
+    "interval":5000,
+    "report":"CHG",
+    "delta": 1,
+    "dest":"udp1"
+}
+
