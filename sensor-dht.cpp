@@ -29,6 +29,9 @@ void updateSensorData()
     sensor.h = dht.readHumidity();
     sensor.t = dht.readTemperature(!(scfg.unit == "F" ? false : true));
 
+    if(isnan(sensor.t)) sensor.t = sensorlast.t;
+    if(isnan(sensor.h)) sensor.h = sensorlast.h;
+
     if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h));
 }
 
@@ -75,8 +78,9 @@ void startSensor()
     {
         sens_cfgdat->getSensor(scfg);
 
-        sensor.nextup = scfg.interval + millis();
-        updateSensorData();
+        // "fake" the time, it will force an update
+        // and send...
+        sensor.nextup = 0;
         sendSensorData();
     }
 }
