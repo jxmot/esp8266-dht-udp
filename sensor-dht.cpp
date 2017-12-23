@@ -14,7 +14,8 @@ const uint8_t DHTPIN = D6;
 const uint8_t DHTTYPE = DHT22;
 
 // Initialize the temperature/ humidity sensor
-DHT dht(DHTPIN, DHTTYPE);
+//DHT dht(DHTPIN, DHTTYPE);
+DHT dht;
 
 sensorconfig scfg;
 livesensor sensor;
@@ -77,6 +78,8 @@ void startSensor()
     if(sens_cfgdat != NULL)
     {
         sens_cfgdat->getSensor(scfg);
+
+        dht.begin(DHTPIN, DHTTYPE);
 
         // "fake" the time, it will force an update
         // and send...
