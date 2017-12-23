@@ -60,13 +60,16 @@ server.on('message', (msg, rinfo) => {
     });
     // finish the announcement
     temp += ']';
-    // put a reply together...
-    const reply = new Buffer(temp);
-    console.log(`server reply: ${reply.toString()}`);
-    // send it back to the sender of the message...
-    server.send(reply, 0, reply.length, rinfo.port, rinfo.address, (err, bytes) => {
-        if(err) console.log(err.stack);
-    });
+
+    if(cfg.reply === true) {
+        // put a reply together...
+        const reply = new Buffer(temp);
+        console.log(`server reply: ${reply.toString()}`);
+        // send it back to the sender of the message...
+        server.send(reply, 0, reply.length, rinfo.port, rinfo.address, (err, bytes) => {
+            if(err) console.log(err.stack);
+        });
+    } else console.log(temp);
 });
 
 /*
