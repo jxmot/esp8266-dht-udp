@@ -1,0 +1,4 @@
+{
+    "udp1":{"addr":"server IP address","port":54321},
+    "udp2":{"addr":"server IP address","port":54321}
+}

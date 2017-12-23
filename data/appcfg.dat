@@ -1,0 +1,8 @@
+{
+    "appname":"Your App Name Here",
+    "debugmute":false,
+    "wificonfig":"/wificfg.dat",
+    "clientconfig":"/clientcfg.dat",
+    "mcastconfig":"/multicfg.dat",
+    "sensorconfig":"/sensorcfg.dat"
+}
