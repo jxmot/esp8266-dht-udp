@@ -59,8 +59,6 @@ extern void ready();
 extern void sendStatus(String status, String msg = "");
 
 extern int handleComm();
-//extern void stopDisplay();
-//extern void handleDisplay();
 
 // pointers to configuration data objects - 
 extern AppCfgData *a_cfgdat;
@@ -69,6 +67,9 @@ extern SrvCfgData *s_cfgdat;
 extern ClientCfgData *c_cfgdat;
 extern MultiCastCfgData *m_cfgdat;
 extern SensorCfgData *sens_cfgdat;
+
+// error message string
+extern String errMsg;
 
 // pointer to the WiFi connection object -
 extern ConnectWiFi *connWiFi;
