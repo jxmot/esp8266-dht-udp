@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 // try to keep this reasonably small. 
-#define UDP_PAYLOAD_SIZE 75
+#define UDP_PAYLOAD_SIZE 150
 
 // The size (in bytes) of the UDP data that we're expecting 
 // to exchange with the server. The +1 is a place holder 
