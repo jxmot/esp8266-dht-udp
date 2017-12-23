@@ -79,7 +79,7 @@ uint8_t pin = 0;
 #endif
 #ifdef ARDUINO_ESP8266_ESP01
     if(!checkDebugMute()) Serial.println("pin will be 3(GPIO2)");
-    pin = 3;
+    pin = 2;
 #endif
     return pin;
 }
