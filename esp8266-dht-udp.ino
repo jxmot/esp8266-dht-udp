@@ -47,7 +47,7 @@ void loop()
         delay(toggInterv);
         toggleLED();
 #else
-static done = false;
+static bool done = false;
 
         // need some other type of error indicator
         if(done == false) 
