@@ -7,14 +7,8 @@
 #include "esp8266-udp.h"
 #include "sensor-dht.h"
 
-// Sensor Settings
-// what digital pin we're connected to.
-// If you are not using NodeMCU change D6 to real pin
-const uint8_t DHTPIN = D6;     		
-const uint8_t DHTTYPE = DHT22;
 
 // Initialize the temperature/ humidity sensor
-//DHT dht(DHTPIN, DHTTYPE);
 DHT dht;
 
 sensorconfig scfg;
@@ -77,11 +71,16 @@ uint8_t getPin(sensorconfig &cfg)
 {
 uint8_t pin = 0;
 
+#ifdef ARDUINO_ESP8266_NODEMCU
     if(!checkDebugMute()) Serial.println("cfg.pin = " + cfg.pin);
 
     if(cfg.pin == "D6") pin = D6;
     else if(cfg.pin == "D4") pin = D4;
-
+#endif
+#ifdef ARDUINO_ESP8266_ESP01
+    if(!checkDebugMute()) Serial.println("pin will be 3(GPIO2)");
+    pin = 3;
+#endif
     return pin;
 }
 
