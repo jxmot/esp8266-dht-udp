@@ -1,5 +1,6 @@
 {
     "type":"DHT22",
+    "pin":"D6",
     "unit":"F",
     "interval":5000,
     "report":"CHG",
