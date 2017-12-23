@@ -21,6 +21,14 @@ DHT::DHT(uint8_t pin, uint8_t type, uint8_t count) {
   // basd on the speed of the processor.
 }
 
+DHT::DHT(void)
+{
+  _maxcycles = microsecondsToClockCycles(1000);  // 1 millisecond timeout for
+                                                 // reading pulses from DHT sensor.
+  // Note that count is now ignored as the DHT reading algorithm adjusts itself
+  // basd on the speed of the processor.
+}
+
 void DHT::begin(void) {
   // set up the pins!
   pinMode(_pin, INPUT_PULLUP);
@@ -29,6 +37,17 @@ void DHT::begin(void) {
   // but so will the subtraction.
   _lastreadtime = -MIN_INTERVAL;
   DEBUG_PRINT("Max clock cycles: "); DEBUG_PRINTLN(_maxcycles, DEC);
+}
+
+void DHT::begin(uint8_t pin, uint8_t type) 
+{
+  _pin = pin;
+  _type = type;
+  #ifdef __AVR
+    _bit = digitalPinToBitMask(pin);
+    _port = digitalPinToPort(pin);
+  #endif
+  begin();
 }
 
 //boolean S == Scale.  True == Fahrenheit; False == Celcius
