@@ -4,6 +4,7 @@
 
 // required include files...
 #include "esp8266-ino.h"
+#include "sensor-dht.h"
 
 /* ************************************************************************ */
 /*
@@ -17,13 +18,12 @@ void setup()
     setupConfig();
     // initialize prior to running the application
     setupInit();
-    // 
-    //startSensor();
     // initial setup is complete, wrap up and continue...
     setupDone();
-
     // announce that we're ready to any interested clients.
     ready();
+    // 
+    startSensor();
 }
 
 /*
@@ -59,11 +59,9 @@ static done = false;
     }
     else
     {
-        // read sensor data if it's time...
-
-        // send latest sensor data
+        // read sensor data if it's time and send the new data...
         // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
-
+        sendSensorData();
 
         //handleComm();
         //handleSensor();
