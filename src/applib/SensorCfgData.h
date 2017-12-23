@@ -12,7 +12,8 @@
 
 class sensorconfig {
     public:
-        String type = "DHT22 or DHT22 goes here";
+        String type = "DHT22 or DHT11 goes here";
+        String pin = "D6 or D4(ESP-01)";
         String unit = "F or C";
         // interval between sensor readings in milliseconds
         unsigned long interval = 5000;
