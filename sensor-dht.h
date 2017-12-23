@@ -12,8 +12,10 @@ class livesensor {
         float t = 0.0;
         float h = 0.0;
         
+        unsigned long nextup = 0;
         
 };
 
 extern void startSensor();
+extern bool sendSensorData();
 

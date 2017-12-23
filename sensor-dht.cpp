@@ -4,6 +4,7 @@
 */
 // required include files...
 #include "esp8266-ino.h"
+#include "esp8266-udp.h"
 #include "sensor-dht.h"
 
 // Sensor Settings
@@ -17,15 +18,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 sensorconfig scfg;
 livesensor sensor;
-uint16_t usc = 0;
-
-void startSensor()
-{
-    if(sens_cfgdat != NULL)
-    {
-        sens_cfgdat->getSensor(scfg);
-    }
-}
+livesensor sensorlast;
 
 void updateSensorData() 
 {
@@ -38,3 +31,54 @@ void updateSensorData()
 
     if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h));
 }
+
+bool sendSensorData()
+{
+bool bRet = false;
+conninfo conn;
+String sensorData;
+
+    if(sensor.nextup < millis())
+    {
+        sensorlast = sensor;
+        updateSensorData();
+        sensor.nextup = scfg.interval + millis();
+
+        if(!checkDebugMute())
+        {
+            Serial.println("last - " + String(sensorlast.t) + "  " + String(sensorlast.h));
+            Serial.println("live - " + String(sensor.t) + "  " + String(sensor.h));
+        }
+
+        if(connWiFi->GetConnInfo(&conn))
+        {
+            // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
+            sensorData = "{\"hostname\":\"" + conn.hostname + "\",\"appname\":\"" + a_cfgdat->getAppName() + "\"";
+            sensorData = sensorData + ",\"seq\":" + String(sensor.seq);
+            sensorData = sensorData + ",\"t\":" + String(sensor.t) + ",\"h\":" + String(sensor.h);
+            sensorData = sensorData + "}";
+
+            int sent = sendUDP((char *)sensorData.c_str(), strlen(sensorData.c_str()));
+            if(sent > 0)
+            {
+                bRet = true;
+                if(!checkDebugMute()) Serial.println("data - " + sensorData);
+            }
+        }
+    }
+    return bRet;
+}
+
+void startSensor()
+{
+    if(sens_cfgdat != NULL)
+    {
+        sens_cfgdat->getSensor(scfg);
+
+        sensor.nextup = scfg.interval + millis();
+        updateSensorData();
+        sendSensorData();
+    }
+}
+
+
