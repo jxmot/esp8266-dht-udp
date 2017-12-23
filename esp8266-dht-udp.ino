@@ -62,9 +62,6 @@ static done = false;
         // read sensor data if it's time and send the new data...
         // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
         sendSensorData();
-
-        //handleComm();
-        //handleSensor();
     }
 }
 
