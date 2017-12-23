@@ -69,17 +69,16 @@ bool ConnectWiFi::IsConnected()
 */
 bool ConnectWiFi::connectToAP(const char *ssid, const char *passw) 
 {
-char macStr[MACSTR_SIZE];
-
     // initialize/clear the connection info object
     initCurrWiFi(ssid, passw);
 
-    // clear out the MAC
-    for(int ix = 0; ix < MACSTR_SIZE; ix++) macStr[ix] = 0;
-
+#ifdef ARDUINO_ESP8266_NODEMCU
     // get the current hostname
     currwifi.hostname = String(WiFi.hostname());
-
+#endif
+#ifdef ARDUINO_ESP8266_ESP01
+    currwifi.hostname = "ESP01_";
+#endif
     // Keep trying to connect until either we're successful or
     // we've run out of attempts
     while(true) 
@@ -106,6 +105,11 @@ char macStr[MACSTR_SIZE];
                 currwifi.macAddress = WiFi.macAddress();
                 currwifi.isConnected = true;
                 currwifi.rssi = WiFi.RSSI();
+#ifdef ARDUINO_ESP8266_ESP01
+                String tmp = String(currwifi.mac[2],HEX) + String(currwifi.mac[1],HEX) + String(currwifi.mac[0],HEX);
+                tmp.toUpperCase();
+                currwifi.hostname = currwifi.hostname + tmp;
+#endif
                 return(true);
             }
         }
