@@ -73,13 +73,38 @@ String sensorData;
     return bRet;
 }
 
+uint8_t getPin(sensorconfig &cfg)
+{
+uint8_t pin = 0;
+
+    if(!checkDebugMute()) Serial.println("cfg.pin = " + cfg.pin);
+
+    if(cfg.pin == "D6") pin = D6;
+    else if(cfg.pin == "D4") pin = D4;
+
+    return pin;
+}
+
+uint8_t getType(sensorconfig &cfg)
+{
+uint8_t type = 0;
+
+    if(!checkDebugMute()) Serial.println("cfg.type = " + cfg.type);
+
+    if(cfg.type == "DHT22") type = DHT22;
+    else if(cfg.type == "DHT11") type = DHT11;
+
+    return type;
+}
+
 void startSensor()
 {
     if(sens_cfgdat != NULL)
     {
         sens_cfgdat->getSensor(scfg);
 
-        dht.begin(DHTPIN, DHTTYPE);
+        //dht.begin(DHTPIN, DHTTYPE);
+        dht.begin(getPin(scfg), getType(scfg));
 
         // "fake" the time, it will force an update
         // and send...
