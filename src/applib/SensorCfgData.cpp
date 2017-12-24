@@ -11,6 +11,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 /*
+    Constructor
 */
 SensorCfgData::SensorCfgData(const char *cfgfile, bool muted): ConfigData(cfgfile)
 {
@@ -19,6 +20,8 @@ SensorCfgData::SensorCfgData(const char *cfgfile, bool muted): ConfigData(cfgfil
 
 //////////////////////////////////////////////////////////////////////////////
 /*
+    JSON Parser - this function handles all of the parsing into an object. It
+    must be present in any class(es) derived from ConfigData. 
 */
 void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
 {
@@ -29,7 +32,11 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
         Serial.println(buf.get());
     }
  
-    // https://bblanchon.github.io/ArduinoJson/assistant/
+    // IMPORTANT : Changes made to the data file should be passed
+    // through the following utility and the following lines must
+    // be modified accordingly -
+    //
+    //      https://bblanchon.github.io/ArduinoJson/assistant/
     const size_t bufferSize = JSON_OBJECT_SIZE(7) + 68;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 

@@ -8,6 +8,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 /*
+    Constructor
 */
 MultiCastCfgData::MultiCastCfgData(const char *cfgfile, bool muted): ConfigData(cfgfile)
 {
@@ -15,6 +16,8 @@ MultiCastCfgData::MultiCastCfgData(const char *cfgfile, bool muted): ConfigData(
 }
 
 /*
+    JSON Parser - this function handles all of the parsing into an object. It
+    must be present in any class(es) derived from ConfigData. 
 */
 void MultiCastCfgData::parseJSON(std::unique_ptr<char[]>& buf)
 {
@@ -27,13 +30,22 @@ void MultiCastCfgData::parseJSON(std::unique_ptr<char[]>& buf)
         Serial.flush();
     }
  
-    // https://bblanchon.github.io/ArduinoJson/assistant/
-    // {"addr":"224.0.0.1","port":54321}
+    // IMPORTANT : Changes made to the data file should be passed
+    // through the following utility and the following lines must
+    // be modified accordingly -
+    //
+    //      https://bblanchon.github.io/ArduinoJson/assistant/
     const size_t bufferSize = JSON_OBJECT_SIZE(2) + 30;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());
 
+    /*
+        This is one of the places where you would customize this class to be 
+        used with your application specific configuration data.
+        
+        The other place is in MultiCastCfgData.h
+    */
     config.addr = String((const char *)json["addr"]);
     config.ipaddr.fromString(config.addr);
     config.port = json["port"];

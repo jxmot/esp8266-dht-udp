@@ -8,6 +8,7 @@
 #include <IPAddress.h>
 #include "ConfigData.h"
 
+// a multi-cast destination
 class mcastcfg {
     public:
         String addr;

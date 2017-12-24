@@ -10,6 +10,10 @@
 
 #include "ConfigData.h"
 
+// Sensor Configuration 
+//
+// NOTE: Don't change the values here, these values are commentary
+// showing what can be contained in the configuration data file.
 class sensorconfig {
     public:
         String type = "DHT22 or DHT11 goes here";
@@ -24,6 +28,7 @@ class sensorconfig {
         String dest = "udp1 or udp1+n";
 };
 
+// Sensor Configuration File Reader/Parser
 class SensorCfgData : public ConfigData {
 
     public:
