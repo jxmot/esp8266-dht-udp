@@ -57,8 +57,9 @@ int iRet = 0;
             // configured as a client...
             if(c_cfgdat != NULL)
             {
-                c_cfgdat->getServer("udp1", udpClient);
-                success = true;
+                // use the default UDP endpoint, the client
+                // can specify a different one via sendUDP()
+                if(c_cfgdat->getServer("udp1", udpClient)) success = true;
             }
         }
     }
@@ -73,9 +74,21 @@ int iRet = 0;
 /*
     Send a UDP packet...
 */
-int sendUDP(char *payload, int len)
+int sendUDP(char *payload, int len, char *endpoint/* = NULL*/)
 {
 int iRet = 0;
+
+    // if a endpoint has been provided then get its
+    // config data...
+    if(endpoint != NULL)
+    {
+        // we should be configured as a client...
+        if(c_cfgdat != NULL)
+        {
+            // use the chosen UDP endpoint...
+            c_cfgdat->getServer(endpoint, udpClient);
+        }
+    }
 
     if(!checkDebugMute()) Serial.println("sendUDP() - len = " + String(len));
 

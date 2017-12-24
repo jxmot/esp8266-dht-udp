@@ -13,7 +13,7 @@ extern "C" {
 
 extern int initUDP();
 
-extern int sendUDP(char *payload, int len);
+extern int sendUDP(char *payload, int len, char *endpoint = NULL);
 extern int replyUDP(char *payload, int len);
 extern int recvUDP();
 
