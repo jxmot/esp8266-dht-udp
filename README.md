@@ -14,7 +14,7 @@ A temperature and humidity sensor using a DHT22/11 device and UDP to transmit th
 
 **To Do** :
 
-* Implement both configurable reading modes - "ALL" and "CHG".
+* Implement both configurable reading modes - "ALL" and "CHG". - **DONE**
 * Create a proper README
 
 
