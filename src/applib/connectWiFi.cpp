@@ -106,7 +106,7 @@ bool ConnectWiFi::connectToAP(const char *ssid, const char *passw)
                 currwifi.isConnected = true;
                 currwifi.rssi = WiFi.RSSI();
 #ifdef ARDUINO_ESP8266_ESP01
-                String tmp = String(currwifi.mac[2],HEX) + String(currwifi.mac[1],HEX) + String(currwifi.mac[0],HEX);
+                String tmp = String(currwifi.mac[3],HEX) + String(currwifi.mac[4],HEX) + String(currwifi.mac[5],HEX);
                 tmp.toUpperCase();
                 currwifi.hostname = currwifi.hostname + tmp;
 #endif
