@@ -16,5 +16,11 @@ A temperature and humidity sensor using a DHT22/11 device and UDP to transmit th
 
 * Implement both configurable reading modes - "ALL" and "CHG". - **DONE**
 * Create a proper README
+* Finish the NodeJS server, it will - 
+    * forward sensor data to - 
+        * IFTTT
+        * a database, mLab or a local MySQL
+        * no storage, but provide live-data html pages
+* consider a redesign where this code becomes "generic" and devices can be server-configured.
 
 
