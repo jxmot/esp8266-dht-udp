@@ -3,7 +3,14 @@
     esp8266-ino.h - support for the associated ino file.
 
     Stuff that's useful for multiple sketches and helps in keeping the 
-    sketch file(s) uncluttered.
+    sketch file(s) uncluttered. Some of the code here might be modified
+    from project to project. 
+
+    Functionality included here - 
+
+        * Configuration file reading and parsing
+        * Application configuration and set update
+        * Miscellaneous support functions.
 
     CHANGES:
         moved LED toggle interval defines to this file - update the

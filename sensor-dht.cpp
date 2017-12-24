@@ -1,20 +1,35 @@
 /* ************************************************************************ */
 /*
     sensor-dht.cpp - support for DHTxx type temperature and humidity sensors.
+
+    To Do : Currently this code can only handle a single sensor during 
+    run-time. Modifiy it to be able to operate on a selected individual 
+    sensor. 
 */
 // required include files...
 #include "esp8266-ino.h"
 #include "esp8266-udp.h"
 #include "sensor-dht.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Initialize the temperature/ humidity sensor
+// Initialize the temperature/humidity sensor
+// NOTE: The DHT class has been modified from its original.
 DHT dht;
 
+// sensor config data
 sensorconfig scfg;
+// current and previous sensor readings
 livesensor sensor;
 livesensor sensorlast;
 
+/*
+    Get fresh data from the sensor and save it in the `sensor`
+    object. Also check it for "is a NaN" and if true use the last
+    data read.
+*/
 void updateSensorData() 
 {
     sensor.seq += 1;
@@ -24,38 +39,63 @@ void updateSensorData()
     sensor.h = dht.readHumidity();
     sensor.t = dht.readTemperature(!(scfg.unit == "F" ? false : true));
 
+    // if either value is a NaN then replace it with the previously read values
     if(isnan(sensor.t)) sensor.t = sensorlast.t;
     if(isnan(sensor.h)) sensor.h = sensorlast.h;
 
-    if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h));
+    if(!checkDebugMute()) 
+        Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "Nan" : "ok"));
 }
 
+/*
+    Check the configured reporting type and decide if the data should
+    be reported (sent via UDP)
+*/
 bool chkReport()
 {
 bool bRet = false;
 
+    // report ALL values as they are read
     if(scfg.report == "ALL") bRet = true;
     else
     {
+        // report only if a change was detected...
         if(scfg.report == "CHG")
         {
-            float t_temp = abs(sensor.t - sensorlast.t);
-            float h_temp = abs(sensor.h - sensorlast.h);
+            // calculate the amount of change (if any)
+            float t_diff = abs(sensor.t - sensorlast.t);
+            float h_diff = abs(sensor.h - sensorlast.h);
 
-            if((t_temp > (scfg.delta / 10)) || (h_temp > (scfg.delta / 10))) bRet = true;
+            // Using the configured delta value determine if the
+            // temperature or humidity have changed enough to be
+            // reported. The delta is stored as a integer that
+            // represents the number of "tenths" of change that
+            // must occur to allow the values to be reported.
+            if((t_diff > (scfg.delta / 10)) || (h_diff > (scfg.delta / 10))) bRet = true;
+
+            if(!checkDebugMute())
+                Serial.println("delta = " + String((scfg.delta / 10)) + "    t_diff = " + String(t_diff) + "    h_diff = " + String(h_diff));
+
         } else bRet = true;
     }
     return bRet;
 }
 
+/*
+    Send the current sensor data to the server if the specified interval
+    has elapsed.
+*/
 bool sendSensorData()
 {
 bool bRet = false;
 conninfo conn;
 String sensorData;
 
+    // Is this sensor up next for a reading?
     if(sensor.nextup < millis())
     {
+        // yes, save the last reading, get new data, and
+        // reset the "next up" time
         sensorlast = sensor;
         updateSensorData();
         sensor.nextup = scfg.interval + millis();
@@ -66,9 +106,12 @@ String sensorData;
             Serial.println("live - " + String(sensor.t) + "  " + String(sensor.h));
         }
 
+        // if the WiFi is connected and we're supposed to report the values...
         if(connWiFi->GetConnInfo(&conn) && chkReport())
         {
-            // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
+            // construct the JSON string with our data inside...
+            //
+            // example : {"hostname":"ESP_290767","t":71.5,"h":37.40,"unit":"F"}
             sensorData = "{\"hostname\":\"" + conn.hostname + "\"";
             sensorData = sensorData + ",\"appname\":\"" + a_cfgdat->getAppName() + "\"";
             sensorData = sensorData + ",\"seq\":" + String(sensor.seq);
@@ -86,6 +129,10 @@ String sensorData;
     return bRet;
 }
 
+/*
+    Get the relative number of the pin we're supposed to use for
+    getting data from the sensor.
+*/
 uint8_t getPin(sensorconfig &cfg)
 {
 uint8_t pin = 0;
@@ -103,6 +150,9 @@ uint8_t pin = 0;
     return pin;
 }
 
+/*
+    Get the sensor type from the config
+*/
 uint8_t getType(sensorconfig &cfg)
 {
 uint8_t type = 0;
@@ -115,13 +165,21 @@ uint8_t type = 0;
     return type;
 }
 
+/*
+    Start the sensor - finish any necessary initialization and
+    get the first data reading.
+*/
 void startSensor()
 {
     if(sens_cfgdat != NULL)
     {
+        // get a copy of the sensor's configuration data
         sens_cfgdat->getSensor(scfg);
 
-        //dht.begin(DHTPIN, DHTTYPE);
+        // initialize the DHT...
+        // NOTE: the DHT class was orignally authored by AdaFruit. I 
+        // made a copy and have modified it a little. See the comments
+        // in src/adafruit/DHT.*
         dht.begin(getPin(scfg), getType(scfg));
 
         // "fake" the time, it will force an update
@@ -131,4 +189,6 @@ void startSensor()
     }
 }
 
-
+#ifdef __cplusplus
+}
+#endif

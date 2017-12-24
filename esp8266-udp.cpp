@@ -2,6 +2,12 @@
 /*
     esp8266-udp.cpp - UDP support for the associated ino file.
 
+    To Do :
+
+        * support mulitple UDP server endpoints simultaneously for our client
+        * make ACK requirement configurable per endpoints
+        * 
+
 */
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -42,12 +48,13 @@ int iRet = 0;
         // acting only as a client?
         if(s_cfgdat != NULL)
         {
-            // init the UDP...
+            // configured as a server, init the UDP...
             s_cfgdat->getServerCfg("udp", udpServer);
             if(udp.begin(udpServer.port)) success = true;
         } 
         else
         {
+            // configured as a client...
             if(c_cfgdat != NULL)
             {
                 c_cfgdat->getServer("udp1", udpClient);

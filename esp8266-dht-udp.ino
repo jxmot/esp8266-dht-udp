@@ -1,5 +1,8 @@
 /* ************************************************************************ */
 /*
+    esp8266-dht-udp.ino - An ESP8266 application that reads the temperature
+    and humidity using a DHT22 or DHT11 sensor. The values are sent to a
+    server via UDP.
 */
 
 // required include files...
@@ -20,9 +23,9 @@ void setup()
     setupInit();
     // initial setup is complete, wrap up and continue...
     setupDone();
-    // announce that we're ready to any interested clients.
+    // announce that we're ready to any interested clients
     ready();
-    // 
+    // start up the sensor and begin reading data from it
     startSensor();
 }
 
@@ -60,7 +63,6 @@ static bool done = false;
     else
     {
         // read sensor data if it's time and send the new data...
-        // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
         sendSensorData();
     }
 }
