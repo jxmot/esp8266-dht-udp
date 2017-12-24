@@ -1,6 +1,16 @@
 /* ************************************************************************ */
 /*
-    esp8266-ino.cpp - support functions for the associated ino file.
+    esp8266-ino.cpp - support for the associated ino file.
+
+    Stuff that's useful for multiple sketches and helps in keeping the 
+    sketch file(s) uncluttered. Some of the code here might be modified
+    from project to project. 
+
+    Functionality included here - 
+
+        * Configuration file reading and parsing
+        * Application configuration and set update
+        * Miscellaneous support functions.
 
 */
 #include "esp8266-ino.h"
@@ -11,6 +21,12 @@ extern "C" {
 
 // If defined then enable "demonstration mode" operations. This includes the
 // use of demo-configuration files instead of the ones with sensitive info.
+//
+// NOTE: The .gitignore file that is included in the repo will ignore files
+// where their name begins with an `_`(underscore). This is done so that config
+// files with sensitive info (passwords, etc) are kept out of the repo when files
+// are committed.
+// 
 //#define CONFIG_DEMO
 
 // if the application configuration is present, and if the debug mute flag is 
@@ -64,6 +80,7 @@ void setupStart()
 }
 
 /*
+    Read and parse the configuration files
 */
 void setupConfig()
 {
@@ -96,6 +113,8 @@ void setupConfig()
 }
 
 /*
+    Perform any required initialization steps after the config files
+    have been read and parsed.
 */
 void setupInit()
 {
@@ -480,6 +499,9 @@ conninfo conn;
     return connWiFi->IsConnected();
 }
 
+/*
+    Read and parse the UDP multicast config data
+*/
 bool setupMultiCast(const String mcastCfgFile)
 {
 String func = String(__func__);
@@ -519,6 +541,9 @@ bool bRet = false;
     return bRet;
 }
 
+/*
+    Read and parse the sensor configuration file
+*/
 bool setupSensor(const String sensorCfgFile)
 {
 String func = String(__func__);
@@ -535,6 +560,10 @@ bool bRet = false;
         if(sens_cfgdat->getError(errMsg)) printError(func, errMsg);
         else 
         {
+            bRet = true;
+
+            // debug stuff
+            // success, display the config data
             if(!checkDebugMute())
             {
                 sensorconfig cfg;
@@ -550,13 +579,10 @@ bool bRet = false;
                 Serial.flush();
             }
             // /debug stuff
-            bRet = true;
         }
     } else printError(func, errMsg);
     return bRet;
 }
-
-
 
 /*
     return the debug mute flag, true = muted
@@ -578,6 +604,9 @@ void ready()
     sendStatus("ready");
 }
 
+/*
+    Send a status message via UDP multicast
+*/
 void sendStatus(String status, String msg)
 {
 conninfo conn;
