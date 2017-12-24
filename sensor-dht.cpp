@@ -30,6 +30,24 @@ void updateSensorData()
     if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h));
 }
 
+bool chkReport()
+{
+bool bRet = false;
+
+    if(scfg.report == "ALL") bRet = true;
+    else
+    {
+        if(scfg.report == "CHG")
+        {
+            float t_temp = abs(sensor.t - sensorlast.t);
+            float h_temp = abs(sensor.h - sensorlast.h);
+
+            if((t_temp > (scfg.delta / 10)) || (h_temp > (scfg.delta / 10))) bRet = true;
+        } else bRet = true;
+    }
+    return bRet;
+}
+
 bool sendSensorData()
 {
 bool bRet = false;
@@ -48,10 +66,11 @@ String sensorData;
             Serial.println("live - " + String(sensor.t) + "  " + String(sensor.h));
         }
 
-        if(connWiFi->GetConnInfo(&conn))
+        if(connWiFi->GetConnInfo(&conn) && chkReport())
         {
             // {"hostname":"ESP_290767","t":"71.5","h":"37","unit":"F"}
-            sensorData = "{\"hostname\":\"" + conn.hostname + "\",\"appname\":\"" + a_cfgdat->getAppName() + "\"";
+            sensorData = "{\"hostname\":\"" + conn.hostname + "\"";
+            sensorData = sensorData + ",\"appname\":\"" + a_cfgdat->getAppName() + "\"";
             sensorData = sensorData + ",\"seq\":" + String(sensor.seq);
             sensorData = sensorData + ",\"t\":" + String(sensor.t) + ",\"h\":" + String(sensor.h);
             sensorData = sensorData + "}";
@@ -78,7 +97,7 @@ uint8_t pin = 0;
     else if(cfg.pin == "D4") pin = D4;
 #endif
 #ifdef ARDUINO_ESP8266_ESP01
-    if(!checkDebugMute()) Serial.println("pin will be 3(GPIO2)");
+    if(!checkDebugMute()) Serial.println("pin will be GPIO2");
     pin = 2;
 #endif
     return pin;
