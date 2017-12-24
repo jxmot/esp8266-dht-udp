@@ -38,8 +38,10 @@ written by Adafruit Industries
 class DHT {
   public:
    DHT(uint8_t pin, uint8_t type, uint8_t count=6);
+// jxmot - 20171220 : added overloaded constructor
    DHT(void);
    void begin(void);
+// jxmot - 20171220 : added overloaded begin()
    void begin(uint8_t pin, uint8_t type);
    float readTemperature(bool S=false, bool force=false);
    float convertCtoF(float);

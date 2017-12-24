@@ -21,6 +21,7 @@ DHT::DHT(uint8_t pin, uint8_t type, uint8_t count) {
   // basd on the speed of the processor.
 }
 
+// jxmot - 20171220 : added overloaded constructor
 DHT::DHT(void)
 {
   _maxcycles = microsecondsToClockCycles(1000);  // 1 millisecond timeout for
@@ -39,6 +40,7 @@ void DHT::begin(void) {
   DEBUG_PRINT("Max clock cycles: "); DEBUG_PRINTLN(_maxcycles, DEC);
 }
 
+// jxmot - 20171220 : added overloaded begin()
 void DHT::begin(uint8_t pin, uint8_t type) 
 {
   _pin = pin;
