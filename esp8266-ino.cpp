@@ -573,7 +573,7 @@ bool bRet = false;
                     Serial.println("Sensor unit - " + cfg.unit);
                     Serial.println("Sensor interval - " + String(cfg.interval));
                     Serial.println("Sensor report - " + cfg.report);
-                    Serial.println("Sensor delta - " + String((cfg.delta/10)));
+                    Serial.println("Sensor delta - " + String(((float)(cfg.delta)/10)));
                     Serial.println("Sensor dest - " + cfg.dest);
                 }
                 Serial.flush();
