@@ -601,7 +601,7 @@ bool checkDebugMute()
 */
 void ready()
 {
-    sendStatus("ready");
+    sendStatus("APP_READY");
 }
 
 /*
@@ -620,10 +620,10 @@ String statusData;
         if(strlen(msg.c_str()) > 0) statusData = statusData + ",\"msg\":\"" + msg + "\"";
         statusData = statusData + "}";
 
-        if(!checkDebugMute()) Serial.println("ready() - " + statusData);
+        if(!checkDebugMute()) Serial.println("sendStatus() - " + statusData);
 
         if(strlen(statusData.c_str()) <= UDP_PAYLOAD_SIZE) multiUDP((char *)statusData.c_str(), strlen(statusData.c_str()));
-        else if(!checkDebugMute()) Serial.println("ready() - NOT sent, too long");
+        else if(!checkDebugMute()) Serial.println("sendStatus() - NOT sent, too long");
     }
 }
 
