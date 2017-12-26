@@ -58,8 +58,28 @@ bool bRet = false;
     return bRet;
 }
 
+void setOTAOptions()
+{
+    if(cfg.port > 0)
+    {
+        ArduinoOTA.setPort(cfg.port);
+    }
+
+    if(cfg.host != "")
+    {
+        ArduinoOTA.setHostname((const char *)cfg.host.c_str());
+    }
+
+    if(cfg.passw != "")
+    {
+        ArduinoOTA.setPassword((const char *)cfg.passw.c_str());
+    }
+}
+
 void initOTA()
 {
+    // check the WiFi connection and then read, parse, 
+    // and save the config data
 #ifdef CONFIG_DEMO
     if(connWiFi->IsConnected() && setupOTA("/otacfg.dat"))
 #else
@@ -67,6 +87,8 @@ void initOTA()
 #endif
     {
         otaWaitUntil = millis() + cfg.otadur;
+
+        setOTAOptions();
 
         ArduinoOTA.onStart([]() {
             if(!checkDebugMute()) Serial.println("\nOTA Start");
