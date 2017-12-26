@@ -9,8 +9,6 @@
 extern "C" {
 #endif
 
-extern unsigned long otaWaitUntil;
-
 extern void initOTA();
 extern bool waitForOTA();
 
