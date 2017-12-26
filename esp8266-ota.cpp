@@ -13,11 +13,9 @@ extern "C" {
 #endif
 
 OTACfgData *o_cfgdat = NULL;
+otacfg cfg;
 
 unsigned long otaWaitUntil;
-unsigned long _duration = 60000;
-
-otacfg cfg;
 
 bool setupOTA(const String otaCfgFile)
 {
@@ -144,7 +142,7 @@ void initOTA()
     
         ArduinoOTA.begin();
         if(!checkDebugMute()) Serial.println("OTA Ready - IP address: " + WiFi.localIP().toString());
-        sendStatus("OTA_READY", String(_duration / 1000));
+        sendStatus("OTA_READY", String(cfg.otadur / 1000));
 
     } else Serial.println("OTA WiFi NOT Ready");
 }
