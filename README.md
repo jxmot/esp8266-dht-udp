@@ -4,6 +4,8 @@ A temperature and humidity sensor using a DHT22/11 device and UDP to transmit th
 
 # Status
 
+**2017-12-26** : All OTA is working, sketches and SPIFFS! Instead of modifying the `ESP8266FS.java` and `platform.txt` I ended up adding the python path to my enviroment path variable. This was only due to the fact that I could not figure out how to *build* the modified flash tool jar file. I understand the process because I was able to get it to build successfully on *Travis CI*. But I could find a quick way to get the jar file back from it. So after spending a measurable amount of time on this it just seemed quicker (and it was) to just go ahead and modifiy the path variable.
+
 **2017-12-25** : OTA updates for sketches is working. SPIFFS, not so much. The problem can be fixed by making a couple of modifications - 
 
 * The file `C:\Users\SOME_USER\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.3.0\platform.txt` requires that the line - 
@@ -16,7 +18,7 @@ be changed to -
 
 The reason for the change is how python was installed. In my case it was installed after the Arduino IDE and it was installed as part of a Microsoft Visual Studio Community Edition installation. When that occurred two versions of python were installed, 2.7 and 3.6. And neither are in the Windows `path`. I could have modified the `path` but it would be difficult to know immediately if there were any side effects in regards to Visual Studio. So that made my other option to be the modification of settings in the Arduino IDE. And that would be isolated and have no external side effects.
 
-* SPIFFS down load tool - The one I'm using is found at <https://github.com/esp8266/arduino-esp8266fs-plugin>. And it's java source files requires a small modification - 
+* SPIFFS down load tool - The one I'm using is found at <https://github.com/esp8266/arduino-esp8266fs-plugin>. And it's java source file `ESP8266FS.java` requires a small modification - 
 
 The line that reads - 
 
