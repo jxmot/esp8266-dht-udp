@@ -40,6 +40,16 @@
 extern "C" {
 #endif
 
+// If defined then enable "demonstration mode" operations. This includes the
+// use of demo-configuration files instead of the ones with sensitive info.
+//
+// NOTE: The .gitignore file that is included in the repo will ignore files
+// where their name begins with an `_`(underscore). This is done so that config
+// files with sensitive info (passwords, etc) are kept out of the repo when files
+// are committed.
+// 
+//#define CONFIG_DEMO
+
 // the default interval for the on-board LED on/off
 extern int toggInterv;
 

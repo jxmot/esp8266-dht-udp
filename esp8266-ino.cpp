@@ -19,16 +19,6 @@
 extern "C" {
 #endif
 
-// If defined then enable "demonstration mode" operations. This includes the
-// use of demo-configuration files instead of the ones with sensitive info.
-//
-// NOTE: The .gitignore file that is included in the repo will ignore files
-// where their name begins with an `_`(underscore). This is done so that config
-// files with sensitive info (passwords, etc) are kept out of the repo when files
-// are committed.
-// 
-//#define CONFIG_DEMO
-
 // if the application configuration is present, and if the debug mute flag is 
 // true then mute debug output
 #define DEBUG_MUTE checkDebugMute()
@@ -601,7 +591,7 @@ bool checkDebugMute()
 */
 void ready()
 {
-    sendStatus("ready");
+    sendStatus("APP_READY");
 }
 
 /*
@@ -620,10 +610,10 @@ String statusData;
         if(strlen(msg.c_str()) > 0) statusData = statusData + ",\"msg\":\"" + msg + "\"";
         statusData = statusData + "}";
 
-        if(!checkDebugMute()) Serial.println("ready() - " + statusData);
+        if(!checkDebugMute()) Serial.println("sendStatus() - " + statusData);
 
         if(strlen(statusData.c_str()) <= UDP_PAYLOAD_SIZE) multiUDP((char *)statusData.c_str(), strlen(statusData.c_str()));
-        else if(!checkDebugMute()) Serial.println("ready() - NOT sent, too long");
+        else if(!checkDebugMute()) Serial.println("sendStatus() - NOT sent, too long");
     }
 }
 

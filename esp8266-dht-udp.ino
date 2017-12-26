@@ -9,6 +9,12 @@
 #include "esp8266-ino.h"
 #include "sensor-dht.h"
 
+#define USE_OTA
+#ifdef USE_OTA
+#include "esp8266-ota.h"
+
+bool start = false;
+#endif
 /* ************************************************************************ */
 /*
     Application Set Up
@@ -23,10 +29,15 @@ void setup()
     setupInit();
     // initial setup is complete, wrap up and continue...
     setupDone();
+#ifdef USE_OTA
+    // init for ota...
+    initOTA();
+#else
     // announce that we're ready to any interested clients
     ready();
     // start up the sensor and begin reading data from it
     startSensor();
+#endif
 }
 
 /*
@@ -35,6 +46,20 @@ void setup()
 void loop()
 {
     yield();
+
+#ifdef USE_OTA
+    // wait until the OTA wait-time exprires, then
+    // run the rest of the app...
+    if(waitForOTA()) return;
+    else if(start == false)
+    {
+        start = true;
+        // announce that we're ready to any interested clients
+        ready();
+        // start up the sensor and begin reading data from it
+        startSensor();
+    }
+#endif
 
     // NOTE: using the LED toggle interval value to indicate 
     // an error comes from a prior interation of this code. 
