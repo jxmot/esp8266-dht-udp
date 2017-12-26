@@ -9,7 +9,7 @@
 
 class otacfg {
     public:
-        int port = 0;
+        uint16_t port = 0;
         String host = "";
         String passw = "";
         unsigned long otadur = 60000;
