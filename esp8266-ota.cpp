@@ -60,7 +60,11 @@ bool bRet = false;
 
 void initOTA()
 {
+#ifdef CONFIG_DEMO
     if(connWiFi->IsConnected() && setupOTA("/otacfg.dat"))
+#else
+    if(connWiFi->IsConnected() && setupOTA("/_otacfg.dat"))
+#endif
     {
         otaWaitUntil = millis() + cfg.otadur;
 
