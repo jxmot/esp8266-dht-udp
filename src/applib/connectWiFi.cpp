@@ -72,6 +72,12 @@ bool ConnectWiFi::connectToAP(const char *ssid, const char *passw)
     // initialize/clear the connection info object
     initCurrWiFi(ssid, passw);
 
+// NOTE: It seems that the ESP-01 will throw an exception when
+// WiFi.hostname() is called the *first time* during it's very
+// first skectch that connects to WiFi. And after it's very 
+// first successful WiFi AP connection it doesn't throw the
+// exception anymore.
+//
 //#ifdef ARDUINO_ESP8266_NODEMCU
     // get the current hostname
     currwifi.hostname = String(WiFi.hostname());

@@ -118,3 +118,26 @@ void ConfigData::parseJSON(std::unique_ptr<char[]>& buf)
     // implement their own parseJSON().
 }
 
+#ifdef USE_LATER
+// need to have access to muteDebug, will have to 
+// move it to this class
+void ConfigData::_getFSInfo(FSInfo &info)
+{
+    SPIFFS.info(info);
+
+    Serial.print("totalBytes: ");
+    Serial.println(info.totalBytes);
+    Serial.print("usedBytes: ");
+    Serial.println(info.usedBytes);
+    Serial.print("blockSize: ");
+    Serial.println(info.blockSize);
+    Serial.print("pageSize: ");
+    Serial.println(info.pageSize);
+    Serial.print("maxOpenFiles: ");
+    Serial.println(info.maxOpenFiles);
+    Serial.print("maxPathLength: ");
+    Serial.println(info.maxPathLength);
+    Serial.println();
+    Serial.flush();
+}
+#endif
