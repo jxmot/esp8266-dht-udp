@@ -98,6 +98,8 @@ void initOTA()
             sendStatus("OTA_END");
         });
     
+        // although this is shown in examples, it doesn't seem to ever
+        // occur.
         ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
             if(!checkDebugMute()) Serial.printf("OTA Progress: %u%%\r", (progress / (total / 100)));
         });
@@ -142,6 +144,7 @@ void initOTA()
     
         ArduinoOTA.begin();
         if(!checkDebugMute()) Serial.println("OTA Ready - IP address: " + WiFi.localIP().toString());
+        if(!checkDebugMute()) Serial.println("OTA Ready - Duration  : " + String(cfg.otadur));
         sendStatus("OTA_READY", String(cfg.otadur / 1000));
 
     } else Serial.println("OTA WiFi NOT Ready");
