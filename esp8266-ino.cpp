@@ -605,7 +605,9 @@ String statusData;
     // connected?
     if(connWiFi->GetConnInfo(&conn)) 
     {
-        statusData = "{\"hostname\":\"" + conn.hostname + "\",\"appname\":\"" + a_cfgdat->getAppName() + "\"";
+        // 'app_id' is currently not used, removed from sensor data.
+        //statusData = "{\"dev_id\":\"" + conn.hostname + "\",\"app_id\":\"" + a_cfgdat->getAppName() + "\"";
+        statusData = "{\"dev_id\":\"" + conn.hostname + "\"";
         statusData = statusData + ",\"status\":\"" + status + "\"";
         if(strlen(msg.c_str()) > 0) statusData = statusData + ",\"msg\":\"" + msg + "\"";
         statusData = statusData + "}";
