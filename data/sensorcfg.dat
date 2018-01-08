@@ -2,7 +2,7 @@
     "type":"DHT22",
     "pin":"D6",
     "unit":"F",
-    "interval":5000,
+    "interval":90000,
     "report":"CHG",
     "delta": 1,
     "dest":"udp1"
