@@ -45,6 +45,11 @@ void setup()
 */
 void loop()
 {
+#ifndef ARDUINO_ESP8266_NODEMCU
+static bool error_sent = false;
+String lasterr = "";
+#endif
+
     yield();
 
 #ifdef USE_OTA
@@ -75,13 +80,13 @@ void loop()
         delay(toggInterv);
         toggleLED();
 #else
-static bool done = false;
-
         // need some other type of error indicator
-        if(done == false) 
+        if(error_sent == false) 
         {
-            Serial.println("Last error - " + errMsg);
-            done = true;
+            lasterr = "Last error - " + errMsg;
+            Serial.println(lasterr);
+            sendStatus("ERROR", lasterr);
+            error_sent = true;
         }
 #endif
     }

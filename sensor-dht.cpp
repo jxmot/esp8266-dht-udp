@@ -40,10 +40,7 @@ void updateSensorData()
 
     // read values from the sensor
     sensor.h = dht.readHumidity();
-    sensor.t = dht.readTemperature(!(scfg.unit == "F" ? false : true));
-// TODO: add new "unit" for humdity, new "units will be scfg.t_unit and scfg.h_unit
-// so - "F" or "C" and "%"
-// then add units to the sensor
+    sensor.t = dht.readTemperature(!(scfg.scale == "F" ? false : true));
 
     // if either value is a NaN then replace it with the previously read values
     if(isnan(sensor.t)) sensor.t = sensorlast.t;
@@ -118,7 +115,7 @@ String sensorData;
         {
             // construct the JSON string with our data inside...
             //
-            // example : {"dev_id":"ESP_290767","t":71.5,"h":37.40,"unit":"F"}
+            // example : {"dev_id":"ESP_290767","t":71.5,"h":37.40,"scale":"F"}
             sensorData = "{\"dev_id\":\"" + conn.hostname + "\"";
             // 'app_id' currently not used, removed from sensor data.
             //sensorData = sensorData + ",\"app_id\":\"" + a_cfgdat->getAppName() + "\"";

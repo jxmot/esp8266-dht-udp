@@ -169,12 +169,17 @@ static bool ledTogg = false;
 //static bool ledTogg = true;
 
 #ifdef ARDUINO_ESP8266_NODEMCU
+    // NOTE: ESP-01's do not have the on-board LED
     if(obLEDinUse == false) initLED();
 
     ledTogg = !ledTogg;
 
     if(ledTogg) digitalWrite(LED_BUILTIN, LOW);
     else digitalWrite(LED_BUILTIN, HIGH);
+#else
+    // if nothing else, at least toggle the flag so that
+    // it can be used elsewhere...
+    ledTogg = !ledTogg;
 #endif
 
     return ledTogg;
@@ -560,11 +565,10 @@ bool bRet = false;
                 if(sens_cfgdat->getSensor(cfg)) 
                 {
                     Serial.println("Sensor type - " + cfg.type);
-                    Serial.println("Sensor unit - " + cfg.unit);
+                    Serial.println("Sensor scale - " + cfg.scale);
                     Serial.println("Sensor interval - " + String(cfg.interval));
                     Serial.println("Sensor report - " + cfg.report);
                     Serial.println("Sensor delta - " + String(((float)(cfg.delta)/10)));
-                    Serial.println("Sensor dest - " + cfg.dest);
                 }
                 Serial.flush();
             }
