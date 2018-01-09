@@ -50,11 +50,10 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     */
     sensorcfg.type = String((const char *)json["type"]);
     sensorcfg.pin = String((const char *)json["pin"]);
-    sensorcfg.unit = String((const char *)json["unit"]);
+    sensorcfg.scale = String((const char *)json["scale"]);
     sensorcfg.interval = json["interval"];
     sensorcfg.report = String((const char *)json["report"]);
     sensorcfg.delta = json["delta"];
-    sensorcfg.dest = String((const char *)json["dest"]);
 }
 
 //////////////////////////////////////////////////////////////////////////////

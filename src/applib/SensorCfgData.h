@@ -18,14 +18,13 @@ class sensorconfig {
     public:
         String type = "DHT22 or DHT11 goes here";
         String pin = "D6 or D4(ESP-01 will be GP2)";
-        String unit = "F or C";
+        String scale = "F or C";
         // interval between sensor readings in milliseconds
         unsigned long interval = 5000;
         String report = "CHG or ALL";
         // divided by 10 gives the amount of change in temp
         // or humidity needed before reporting
         int delta = 1;
-        String dest = "udp1 or udp1+n";
 };
 
 // Sensor Configuration File Reader/Parser
