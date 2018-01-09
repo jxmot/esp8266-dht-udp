@@ -99,7 +99,8 @@ This file does not contain sensitive configuration data. So it is not necessary 
 The `data/sensorcfg.dat` file contains the configure the application for one of two specific temperature/humdity sensors - 
 
 * Sensor type, either `"DHT11"` or `"DHT22"`. At this time these are the only sensors supported.
-* EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor.
+* EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor. 
+    * **NOTE** : This pin setting is ignored if an ESP-01 is used. On that platform GPIO2 will be used instead and is not configurable. See `sensor-dht.cpp` and look for `ARDUINO_ESP8266_ESP01` for the associated code.
 * Temperature scale, this is used to select Fahrenheit or Celsius.
 * Sensor reading interval, this is the duration in milliseconds between subsequent sensor data readings.
 * Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
