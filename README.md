@@ -10,13 +10,13 @@ I had been tinkering with using an ESP8266 and a temperature/humidity sensor to 
 
 Each *sensor* consists of an ESP-01S and a DHT22 temperature/humidity sensor. They are somewhat configurable, and utilize OTA for firmware and configuration file updates. In addition the sensors utilize UDP to communicate status and data to a server implemented to run on NodeJS.
 
-## Feature Highlights
-
-
-
 # Details
 
 ## Operation
+
+This application requires a server capable of receiving UDP packets. I've chosen NodeJS for this, and a server can be found in my [node-dht-udp](https://github.com/jxmot/node-dht-udp) repository.
+
+It is the responsibility of that server to listen for data from the sensors and forward it to a Firebase database.
 
 ## Configuration
 
@@ -105,7 +105,7 @@ The `data/sensorcfg.dat` file contains the configure the application for one of 
 * Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
     * `"ALL"` - report the sensor data *every time* the sensor data is read.
     * `"CHG"` - only report sensor data *if* the temperature or humidity values have changed.
-* If the reporting type is `"CHG"` then this is the amount of required change before the temperature or humidity are reported. The integer value kept here is divided by 10 to create a floating point value. Then if the amount of change (*temperature or humidity*) is greater the data is sent.
+* If the reporting type is `"CHG"` then this is the amount of required change before the temperature or humidity are reported. The integer value kept here is divided by 10 to create a floating point value. Then if the amount of change (*temperature or humidity*) is greater then the data is sent.
 
 Here are the contents of the `sensorcfg.dat` file -
 
@@ -123,6 +123,8 @@ Here are the contents of the `sensorcfg.dat` file -
 This file does not contain sensitive configuration data. So it is not necessary to prepend the underscore to its name.
 
 ## OTA
+
+### Configuration
 
 ## Sending Data and Status
 
