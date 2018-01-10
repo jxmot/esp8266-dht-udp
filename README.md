@@ -150,6 +150,24 @@ The purpose of the changes was to allow the DHT class to be instantiated before 
 
 # Future Modifications
 
+## Application Version
+
+Add a "version" member to the `appcfg.dat` file. This would contain a string formatted as `"0.0.0"` using the typical "major"."minor"."patch" scheme. For example - 
+
+```json
+{
+    "appname":"Your App Name Here",
+    "appver":"0.1.0",
+    "debugmute":false,
+    "wificonfig":"/wificfg.dat",
+    "clientconfig":"/clientcfg.dat",
+    "mcastconfig":"/multicfg.dat",
+    "sensorconfig":"/sensorcfg.dat"
+}
+```
+
+In addition single letters such as "`b`" could be added to the end of the version string.
+
 ## Configuration File Naming
 
 To accommodate devices with configuration differences the following changes will be made - 
