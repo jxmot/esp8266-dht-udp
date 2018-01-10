@@ -137,6 +137,12 @@ This file does not contain sensitive configuration data. So it is not necessary 
 
 ## DHTxx Library Modifications
 
+The following modifications were made to the *Adafruit* DHT source files `src/adafruit/DHT.h` and `src/adafruit/DHT.cpp` - 
+
+* Added an overloaded contructor - `void DHT::DHT(void)`
+* Added an overloaded begin function - `void DHT::begin(uint8_t pin, uint8_t type)`
+
+The purpose of the changes was to allow the DHT class to be instantiated before the sensor configuration was read and parsed. 
 
 # Future Modifications
 
