@@ -18,6 +18,8 @@ This application requires a server capable of receiving UDP packets. I've chosen
 
 It is the responsibility of that server to listen for data from the sensors and forward it to a Firebase database.
 
+### Network Traffic
+
 ## Configuration
 
 The configuration source code is based on my [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. Therefor only the configurable items and their use will be described here.
@@ -136,10 +138,37 @@ This file does not contain sensitive configuration data. So it is not necessary 
 ## DHTxx Library Modifications
 
 
+# Future Modifications
 
+## Configuration File Naming
 
+To accommodate devices with configuration differences the following changes will be made - 
 
+* One or more configuration files will can be named using the ESP-01 device *hostname*. For example in `appcfg.dat` - 
 
+```json
+{
+    "appname":"Your App Name Here",
+    "debugmute":false,
+    "wificonfig":"/wificfg.dat",
+    "clientconfig":"/clientcfg.dat",
+    "mcastconfig":"/multicfg.dat",
+    "sensorconfig":"/sensorcfg-ESP_49F542.dat"
+}
+```
+
+Where `"sensorconfig":"/sensorcfg-ESP_49F542.dat"` would specifiy the sensor config file for a specific device. The addtion of `ESP_49F542` would match the *hostname* of a specific device.
+
+## Run-time Configuration
+
+Commands could be issued from the server that would alter one or more configuration items. For example the following could be reconfigured - 
+
+* Sensor - 
+    * scale
+    * interval
+    * report type
+    * delta
+* *TBD*
 
 # Status (Historical)
 
