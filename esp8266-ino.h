@@ -66,6 +66,8 @@ extern bool setupClient(const String clientCfgFile);
 extern bool setupMultiCast(const String mcastCfgFile);
 extern bool setupSensor(const String sensorCfgFile);
 
+extern String millisToTime(int interval);
+
 extern bool toggleLED();
 
 extern void printError(String func, String _errMsg);

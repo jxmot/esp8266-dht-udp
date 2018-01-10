@@ -40,10 +40,10 @@ bool bRet = false;
 
             if(!checkDebugMute()) 
             {
-                Serial.println("OTA port   = " + String(cfg.port));
-                Serial.println("OTA host   = " + String(cfg.host));
-                Serial.println("OTA passw  = " + String(cfg.passw));
-                Serial.println("OTA otadur = " + String(cfg.otadur));
+                Serial.println("OTA port   - " + String(cfg.port));
+                Serial.println("OTA host   - " + String(cfg.host));
+                Serial.println("OTA passw  - " + String(cfg.passw));
+                Serial.println("OTA otadur - " + String(cfg.otadur) + " = " + millisToTime(cfg.otadur));
                 Serial.println();
                 Serial.flush();
             }

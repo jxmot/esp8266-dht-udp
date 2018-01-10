@@ -135,6 +135,20 @@ void setupDone()
 #endif
 }
 
+String millisToTime(int interval)
+{
+char buf[12];   
+
+    unsigned long sec = interval / 1000;
+    int hr = sec / 3600;
+    sec %= 3600;
+    int min = sec / 60;
+    sec %= 60;
+
+    sprintf(buf, "%02d:%02d:%02d", hr, min, sec);
+    return String(buf);
+}
+
 void initLED()
 {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -566,7 +580,7 @@ bool bRet = false;
                 {
                     Serial.println("Sensor type - " + cfg.type);
                     Serial.println("Sensor scale - " + cfg.scale);
-                    Serial.println("Sensor interval - " + String(cfg.interval));
+                    Serial.println("Sensor interval - " + String(cfg.interval) + " = " + millisToTime(cfg.interval));
                     Serial.println("Sensor report - " + cfg.report);
                     Serial.println("Sensor delta - " + String(((float)(cfg.delta)/10)));
                 }
