@@ -19,13 +19,13 @@
 */
 #pragma once
 
-#include "src/applib/AppCfgData.h"
-#include "src/applib/WifiCfgData.h"
-#include "src/applib/SrvCfgData.h"
-#include "src/applib/ClientCfgData.h"
-#include "src/applib/MultiCastCfgData.h"
-#include "src/applib/SensorCfgData.h"
-#include "src/applib/connectWiFi.h"
+#include "AppCfgData.h"
+#include "WifiCfgData.h"
+#include "SrvCfgData.h"
+#include "ClientCfgData.h"
+#include "MultiCastCfgData.h"
+#include "SensorCfgData.h"
+#include "connectWiFi.h"
 
 #include "esp8266-udp.h"
 

@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "src/adafruit/DHT.h"
+#include "../adafruit/DHT.h"
 
 // 
 class livesensor {

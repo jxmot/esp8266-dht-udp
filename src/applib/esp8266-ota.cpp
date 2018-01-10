@@ -6,7 +6,7 @@
 // required include files...
 #include <ArduinoOTA.h>
 #include "esp8266-ino.h"
-#include "src/applib/OTACfgData.h"
+#include "OTACfgData.h"
 
 #ifdef __cplusplus
 extern "C" {
