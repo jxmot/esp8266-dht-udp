@@ -127,7 +127,11 @@ This file does not contain sensitive configuration data. So it is not necessary 
 
 ## OTA
 
+I experimented with OTA with limited results. And the device would not appear reliably in the Arduino IDE. So it has been disabled. To enable OTA removed the comment on the line `//#define USE_OTA` in `esp8266-dht-udp.ino`.
+
 ### Configuration
+
+The OTA configuration is located in `data/otacfg.dat`.
 
 ## Sending Data and Status
 

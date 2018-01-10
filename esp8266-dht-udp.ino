@@ -9,7 +9,9 @@
 #include "src/applib/esp8266-ino.h"
 #include "src/applib/sensor-dht.h"
 
-#define USE_OTA
+// disabled OTA due to unreliablity in regards to
+// seeing the device on the Arduino IDE
+//#define USE_OTA
 #ifdef USE_OTA
 #include "src/applib/esp8266-ota.h"
 
