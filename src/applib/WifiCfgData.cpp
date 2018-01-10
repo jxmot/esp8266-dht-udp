@@ -38,7 +38,13 @@ void WifiCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // how much is requried for a given bit of JSON data - 
     //
     //      https://bblanchon.github.io/ArduinoJson/assistant/
-    const size_t bufferSize = JSON_ARRAY_SIZE(2) + 2*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 180;
+    //
+    // NOTE!!! : The following size is intended for 2 AP's, if more are used
+    // then it WILL be necessary to adjust the sizes!!
+    const size_t bufferSize = JSON_ARRAY_SIZE(2) + 3*JSON_OBJECT_SIZE(2) + 78;
+    // example, for 3 AP's - 
+    // const size_t bufferSize = JSON_ARRAY_SIZE(3) + 4*JSON_OBJECT_SIZE(2) + 108;
+
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());

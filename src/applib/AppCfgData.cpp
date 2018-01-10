@@ -37,7 +37,7 @@ void AppCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // how much is requried for a given bit of JSON data - 
     //
     //      https://bblanchon.github.io/ArduinoJson/assistant/
-    const size_t bufferSize = JSON_OBJECT_SIZE(6) + 141;
+    const size_t bufferSize = JSON_OBJECT_SIZE(6) + 145;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());

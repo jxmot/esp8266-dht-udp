@@ -37,7 +37,7 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // be modified accordingly -
     //
     //      https://bblanchon.github.io/ArduinoJson/assistant/
-    const size_t bufferSize = JSON_OBJECT_SIZE(7) + 68;
+    const size_t bufferSize = JSON_OBJECT_SIZE(6) + 61;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());
