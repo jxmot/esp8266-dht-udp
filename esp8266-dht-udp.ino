@@ -6,12 +6,12 @@
 */
 
 // required include files...
-#include "esp8266-ino.h"
-#include "sensor-dht.h"
+#include "src/applib/esp8266-ino.h"
+#include "src/applib/sensor-dht.h"
 
 #define USE_OTA
 #ifdef USE_OTA
-#include "esp8266-ota.h"
+#include "src/applib/esp8266-ota.h"
 
 bool start = false;
 #endif
