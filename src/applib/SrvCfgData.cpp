@@ -41,7 +41,7 @@ void SrvCfgData::parseJSON(std::unique_ptr<char[]>& buf)
         Serial.flush();
     }
  
-    // https://bblanchon.github.io/ArduinoJson/assistant/
+    // https://arduinojson.org/assistant/
     const size_t bufferSize = JSON_OBJECT_SIZE(2) + 2*JSON_OBJECT_SIZE(1) + 120;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 

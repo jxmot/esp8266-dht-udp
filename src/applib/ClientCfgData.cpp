@@ -38,7 +38,7 @@ void ClientCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // through the following utility and the following lines must
     // be modified accordingly -
     //
-    //      https://bblanchon.github.io/ArduinoJson/assistant/
+    //      https://arduinojson.org/assistant/
     const size_t bufferSize = (3 * JSON_OBJECT_SIZE(2)) + 68;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 

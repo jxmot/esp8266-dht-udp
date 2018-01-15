@@ -37,7 +37,7 @@ void WifiCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // For getting the size correct, use the following to calculate
     // how much is requried for a given bit of JSON data - 
     //
-    //      https://bblanchon.github.io/ArduinoJson/assistant/
+    //      https://arduinojson.org/assistant/
     //
     // NOTE!!! : The following size is intended for 2 AP's, if more are used
     // then it WILL be necessary to adjust the sizes!!

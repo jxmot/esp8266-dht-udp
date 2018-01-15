@@ -57,7 +57,8 @@ void updateSensorData()
 bool chkReport()
 {
 bool bRet = false;
-float f_delta = ((float)(scfg.delta) / 10);
+float f_deltaT = ((float)(scfg.delta_t) / 10);
+float f_deltaH = ((float)(scfg.delta_h) / 10);
 
     // report ALL values as they are read
     if(scfg.report == "ALL") bRet = true;
@@ -75,10 +76,13 @@ float f_delta = ((float)(scfg.delta) / 10);
             // reported. The delta is stored as a integer that
             // represents the number of "tenths" of change that
             // must occur to allow the values to be reported.
-            if((t_diff > f_delta) || (h_diff > f_delta)) bRet = true;
+            if((t_diff > f_deltaT) || (h_diff > f_deltaH)) bRet = true;
 
             if(!checkDebugMute())
-                Serial.println("delta = " + String(f_delta) + "    t_diff = " + String(t_diff) + "    h_diff = " + String(h_diff));
+            {
+                Serial.println("deltaT = " + String(f_deltaT) + "    deltaT = " + String(f_deltaH));
+                Serial.println("t_diff = " + String(t_diff) + "    h_diff = " + String(h_diff));
+            }
 
         } else bRet = true;
     }

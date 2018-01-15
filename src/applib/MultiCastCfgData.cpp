@@ -34,7 +34,7 @@ void MultiCastCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // through the following utility and the following lines must
     // be modified accordingly -
     //
-    //      https://bblanchon.github.io/ArduinoJson/assistant/
+    //      https://arduinojson.org/assistant/
     const size_t bufferSize = JSON_OBJECT_SIZE(2) + 26;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
