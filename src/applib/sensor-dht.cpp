@@ -15,6 +15,10 @@
 extern "C" {
 #endif
 
+// max number of NaN results from the sensor in succession 
+// before reporting an error
+#define MAX_NAN 5
+
 // Initialize the temperature/humidity sensor
 // NOTE: The DHT class has been modified from its original.
 DHT dht;
@@ -42,12 +46,22 @@ void updateSensorData()
     sensor.h = dht.readHumidity();
     sensor.t = dht.readTemperature(!(scfg.scale == "F" ? false : true));
 
-    // if either value is a NaN then replace it with the previously read values
-    if(isnan(sensor.t)) sensor.t = sensorlast.t;
-    if(isnan(sensor.h)) sensor.h = sensorlast.h;
-
     if(!checkDebugMute()) 
-        Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "Nan" : "ok"));
+    {
+        Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "NaN!" : "ok")  + "    " + String(sensor.nancount));
+    }
+
+    if(isnan(sensor.t) || isnan(sensor.h))
+    {
+        sensor.t = sensorlast.t;
+        sensor.h = sensorlast.h;
+
+        if(sensor.nancount >= MAX_NAN) 
+        {
+            sendStatus("SENSOR_ERROR", "Too many NaN readings from sensor");
+            sensor.nancount = 0;
+        } else sensor.nancount += 1;
+    } else sensor.nancount = 0;
 }
 
 /*
@@ -80,7 +94,7 @@ float f_deltaH = ((float)(scfg.delta_h) / 10);
 
             if(!checkDebugMute())
             {
-                Serial.println("deltaT = " + String(f_deltaT) + "    deltaT = " + String(f_deltaH));
+                Serial.println("deltaT = " + String(f_deltaT) + "    deltaH = " + String(f_deltaH));
                 Serial.println("t_diff = " + String(t_diff) + "    h_diff = " + String(h_diff));
             }
 
