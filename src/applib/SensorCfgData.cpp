@@ -36,8 +36,8 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // through the following utility and the following lines must
     // be modified accordingly -
     //
-    //      https://bblanchon.github.io/ArduinoJson/assistant/
-    const size_t bufferSize = JSON_OBJECT_SIZE(6) + 61;
+    //      https://arduinojson.org/assistant/
+    const size_t bufferSize = JSON_OBJECT_SIZE(7) + 73;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());
@@ -53,7 +53,8 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     sensorcfg.scale = String((const char *)json["scale"]);
     sensorcfg.interval = json["interval"];
     sensorcfg.report = String((const char *)json["report"]);
-    sensorcfg.delta = json["delta"];
+    sensorcfg.delta_t = json["delta_t"];
+    sensorcfg.delta_h = json["delta_h"];
 }
 
 //////////////////////////////////////////////////////////////////////////////

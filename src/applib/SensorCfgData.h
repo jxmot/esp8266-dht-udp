@@ -24,7 +24,8 @@ class sensorconfig {
         String report = "CHG or ALL";
         // divided by 10 gives the amount of change in temp
         // or humidity needed before reporting
-        int delta = 1;
+        int delta_t = 1;
+        int delta_h = 1;
 };
 
 // Sensor Configuration File Reader/Parser
