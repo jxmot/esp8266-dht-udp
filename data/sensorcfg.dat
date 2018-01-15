@@ -4,6 +4,7 @@
     "scale":"F",
     "interval":300000,
     "report":"CHG",
-    "delta": 5
+    "delta_t": 1,
+    "delta_h": 1
 }
 
