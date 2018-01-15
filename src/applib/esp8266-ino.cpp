@@ -582,7 +582,8 @@ bool bRet = false;
                     Serial.println("Sensor scale - " + cfg.scale);
                     Serial.println("Sensor interval - " + String(cfg.interval) + " = " + millisToTime(cfg.interval));
                     Serial.println("Sensor report - " + cfg.report);
-                    Serial.println("Sensor delta - " + String(((float)(cfg.delta)/10)));
+                    Serial.println("Sensor delta T - " + String(((float)(cfg.delta_t)/10)));
+                    Serial.println("Sensor delta H - " + String(((float)(cfg.delta_h)/10)));
                 }
                 Serial.flush();
             }
