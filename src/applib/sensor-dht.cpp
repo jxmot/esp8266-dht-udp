@@ -34,8 +34,10 @@ livesensor sensorlast;
     object. Also check it for "is a NaN" and if true use the last
     data read.
 */
-void updateSensorData() 
+bool updateSensorData() 
 {
+bool bRet = true;
+
     // each time we update the data from the sensor increment the
     // sequence number. this will assist in determining data updates vs
     // data reports.
@@ -46,15 +48,14 @@ void updateSensorData()
     sensor.h = dht.readHumidity();
     sensor.t = dht.readTemperature(!(scfg.scale == "F" ? false : true));
 
-    if(!checkDebugMute()) 
-    {
-        Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "NaN!" : "ok")  + "    " + String(sensor.nancount));
-    }
+    if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "NaN!" : "ok")  + "    " + String(sensor.nancount));
 
     if(isnan(sensor.t) || isnan(sensor.h))
     {
-        sensor.t = sensorlast.t;
-        sensor.h = sensorlast.h;
+        sensor.h = sensorlast.t = 0;
+        sensor.t = sensorlast.h = 0;
+
+        bRet = false;
 
         if(sensor.nancount >= MAX_NAN) 
         {
@@ -62,6 +63,8 @@ void updateSensorData()
             sensor.nancount = 0;
         } else sensor.nancount += 1;
     } else sensor.nancount = 0;
+
+    return bRet;
 }
 
 /*
@@ -98,6 +101,9 @@ float f_deltaH = ((float)(scfg.delta_h) / 10);
                 Serial.println("t_diff = " + String(t_diff) + "    h_diff = " + String(h_diff));
             }
 
+            // save the last reading 
+            sensorlast = sensor;
+
         } else bRet = true;
     }
     return bRet;
@@ -116,11 +122,10 @@ String sensorData;
     // Is this sensor up next for a reading?
     if(sensor.nextup < millis())
     {
-        // yes, save the last reading, get new data, and
-        // reset the "next up" time
-        sensorlast = sensor;
-        updateSensorData();
-        sensor.nextup = scfg.interval + millis();
+        // update the sensor data, if an error occured then 
+        // change the interval between retries... success?
+        if(updateSensorData()) sensor.nextup = scfg.interval + millis();
+        else sensor.nextup = scfg.error_interval + millis();
 
         if(!checkDebugMute())
         {
