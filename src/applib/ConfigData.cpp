@@ -83,8 +83,11 @@ bool bRet = false;
         else
         {
             // Allocate a buffer to store contents of the file.
-            std::unique_ptr<char[]> buf(new char[cfgData.size()]);
-            memset(buf.get(), 0, cfgData.size());
+            // NOTE: the "+ 1" is necessary, it elimiates the chance
+            // of seeing dangling garbage at the end from previous
+            // buffers.
+            std::unique_ptr<char[]> buf(new char[cfgData.size() + 1]);
+            memset(buf.get(), 0, cfgData.size() + 1);
 
             // https://bblanchon.github.io/ArduinoJson/
             // 
@@ -92,13 +95,14 @@ bool bRet = false;
             // buffer to be mutable. If you don't use ArduinoJson, you may as well
             // use configFile.readString instead.
             cfgData.readBytes(buf.get(), cfgData.size());
-            //Serial.println(cfgData.size());
-            //Serial.println(buf.get());
+            //Serial.println("file size - " + String(cfgData.size()));
+            //Serial.println("file contents - " + String(buf.get()));
 
 // NOTE: modify all other repos!!!!
             cfgData.close();
 
             parseJSON(buf);
+
             error = 0;
             bRet = true;
         }
