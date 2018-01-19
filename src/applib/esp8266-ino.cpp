@@ -501,6 +501,7 @@ conninfo conn;
             Serial.println("attempts = " + String(conn.attempts));
             Serial.println("time     = " + String(conn.timeToConnect));
             Serial.println("rssi     = " + String(conn.rssi) + " dBm");
+            Serial.println();
         }
     }
     // /debug stuff
@@ -581,6 +582,7 @@ bool bRet = false;
                     Serial.println("Sensor type - " + cfg.type);
                     Serial.println("Sensor scale - " + cfg.scale);
                     Serial.println("Sensor interval - " + String(cfg.interval) + " = " + millisToTime(cfg.interval));
+                    Serial.println("Error interval - " + String(cfg.interval) + " = " + millisToTime(cfg.error_interval));
                     Serial.println("Sensor report - " + cfg.report);
                     Serial.println("Sensor delta T - " + String(((float)(cfg.delta_t)/10)));
                     Serial.println("Sensor delta H - " + String(((float)(cfg.delta_h)/10)));
