@@ -21,6 +21,9 @@ class sensorconfig {
         String scale = "F or C";
         // interval between sensor readings in milliseconds
         unsigned long interval = 5000;
+        // retry interval when the sensor returns a NaN or
+        // some other error
+        unsigned long error_interval = 5000;
         String report = "CHG or ALL";
         // divided by 10 gives the amount of change in temp
         // or humidity needed before reporting

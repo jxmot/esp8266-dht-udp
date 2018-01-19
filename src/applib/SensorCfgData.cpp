@@ -37,7 +37,7 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     // be modified accordingly -
     //
     //      https://arduinojson.org/assistant/
-    const size_t bufferSize = JSON_OBJECT_SIZE(7) + 73;
+    const size_t bufferSize = JSON_OBJECT_SIZE(8) + 95;
     StaticJsonBuffer<bufferSize> jsonBuffer;
 
     JsonObject& json = jsonBuffer.parseObject(buf.get());
@@ -52,6 +52,7 @@ void SensorCfgData::parseJSON(std::unique_ptr<char[]>& buf)
     sensorcfg.pin = String((const char *)json["pin"]);
     sensorcfg.scale = String((const char *)json["scale"]);
     sensorcfg.interval = json["interval"];
+    sensorcfg.error_interval = json["error_interval"];
     sensorcfg.report = String((const char *)json["report"]);
     sensorcfg.delta_t = json["delta_t"];
     sensorcfg.delta_h = json["delta_h"];
