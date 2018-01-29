@@ -159,7 +159,7 @@ The OTA configuration is located in `data/otacfg.dat`. At this time only the `ot
 ### Finished Sensor Devices
 
 <p align="center">
-  <img src="./mdimg/sensor-devices-478x271.png" alt="Sensor Devices" txt="Sensor Devices"/>
+  <img src="./mdimg/sensor-devices-478x216.png" alt="Sensor Devices" txt="Sensor Devices"/>
 </p>
 
 
