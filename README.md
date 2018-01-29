@@ -156,6 +156,13 @@ The OTA configuration is located in `data/otacfg.dat`. At this time only the `ot
 
 ## Schematic and Build Details
 
+### Finished Sensor Devices
+
+<p align="center">
+  <img src="./mdimg/sensor-devices-478x271.png" alt="Sensor Devices" txt="Sensor Devices"/>
+</p>
+
+
 ### Parts List and Sources
 
 I usually don't like to wait very long for parts and components, so I normally use Amazon as my supplier. (*The links below connect to Amazon*)
