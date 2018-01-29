@@ -8,7 +8,9 @@ I had been tinkering with using an ESP8266 and a temperature/humidity sensor to 
 
 # Overview
 
-Each *sensor* consists of an ESP-01S and a DHT22 temperature/humidity sensor. They are somewhat configurable, and utilize OTA for firmware and configuration file updates. In addition the sensors utilize UDP to communicate status and data to a server implemented to run on NodeJS.
+Each *sensor device* consists of an ESP-01S and a DHT22 temperature/humidity sensor. However most any ESP8266 platform should work.
+
+The operation of the devices are configurable and utilize UDP to communicate status and data to a server implemented to run on NodeJS.
 
 # Details
 
@@ -16,13 +18,29 @@ Each *sensor* consists of an ESP-01S and a DHT22 temperature/humidity sensor. Th
 
 This application requires a server capable of receiving UDP packets. I've chosen NodeJS for this, and a server can be found in my [node-dht-udp](https://github.com/jxmot/node-dht-udp) repository.
 
-It is the responsibility of that server to listen for data from the sensors and forward it to a Firebase database.
+It is the responsibility of that server to listen for data from the sensors and forward it to a database and to any connected *web clients*.
 
 ### Network Traffic
 
+The devices transmit two types of UDP traffic, *multi-cast UDP* and *UDP*. The multi-cast messages are intended for communicating device status to one or more listeners. The other messages are sent to a specific server and contain sensor data.
+
+#### Status Messages
+
+Here are some examples of the status messages that a sensor device might send - 
+
+* Device successful start - `{"dev_id":"ESP_49ECF6","status":"APP_READY"}`
+* Device sensor error - `{"dev_id":"ESP_49ECF6","status":"SENSOR_ERROR","msg":"Too many NaN readings from sensor"}`
+* Device sensor recovery - `{"dev_id":"ESP_49ECF6","status":"SENSOR_RECOVER","msg":"Recovered after NaN from sensor"}`
+
+#### Data Messages
+
+Here's an example of a typical data message - 
+
+`{"dev_id":"ESP_49ECF6","seq":2,"t":67.28,"h":26.20}`
+
 ## Configuration
 
-The configuration source code is based on my [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. Therefor only the configurable items and their use will be described here.
+The configuration source code is based on my [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. Therefore only the configurable items and their use will be described here.
 
 The configuration files are kept in the `data` folder.
 
@@ -105,6 +123,7 @@ The `data/sensorcfg.dat` file contains the configure the application for one of 
     * **NOTE** : This pin setting is ignored if an ESP-01 is used. On that platform GPIO2 will be used instead and is not configurable. See `sensor-dht.cpp` and look for `ARDUINO_ESP8266_ESP01` for the associated code.
 * Temperature scale, this is used to select Fahrenheit or Celsius.
 * Sensor reading interval, this is the duration in milliseconds between subsequent sensor data readings.
+* Sensor retry interval, this is the duration in milliseconds between subsequent sensor data readings when an error (*typically the sensor will return NaN*) occurs.
 * Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
     * `"ALL"` - report the sensor data *every time* the sensor data is read.
     * `"CHG"` - only report sensor data *if* the temperature or humidity values have changed.
@@ -117,9 +136,11 @@ Here are the contents of the `sensorcfg.dat` file -
     "type":"DHT22",
     "pin":"D6",
     "scale":"F",
-    "interval":90000,
+    "interval":300000,
+    "error_interval":10000,
     "report":"CHG",
-    "delta": 1
+    "delta_t": 5,
+    "delta_h": 10
 }
 ```
 
@@ -127,17 +148,31 @@ This file does not contain sensitive configuration data. So it is not necessary 
 
 ## OTA
 
-I experimented with OTA with limited results. And the device would not appear reliably in the Arduino IDE. So it has been disabled. To enable OTA removed the comment on the line `//#define USE_OTA` in `esp8266-dht-udp.ino`.
+I experimented with OTA with limited results. And the device would not appear reliably in the Arduino IDE. So it has been disabled. To enable OTA remove the comment on the line `//#define USE_OTA` in `esp8266-dht-udp.ino`.
 
 ### Configuration
 
-The OTA configuration is located in `data/otacfg.dat`.
-
-## Sending Data and Status
+The OTA configuration is located in `data/otacfg.dat`. At this time only the `otadur` is used. It is the amount of time that the device will wait for OTA to begin *before* it starts the application.
 
 ## Schematic and Build Details
 
 ### Parts List and Sources
+
+I usually don't like to wait very long for parts and components, so I normally use Amazon as my supplier. (*The links below connect to Amazon*)
+
+* [Elegoo 6PCS 170 tie-points Mini Breadboard kit for Arduino](<https://www.amazon.com/dp/B01EV6SBXQ/_encoding=UTF8?coliid=I2ITWEX69IO04P&colid=1JJSTU3ZZ46WB&psc=0>)
+* [MagiDeal 10pcs Female MICRO USB to DIP 5-Pin Pinboard 2.54mm micro USB type](<https://www.amazon.com/dp/B0183KF7TM/_encoding=UTF8?coliid=I2F21T0Z4T8FSA&colid=1JJSTU3ZZ46WB&psc=0>)
+* [ICstation AMS1117-3.3 DC Voltage Regulator Step Down Power Supply Module 4.75V-12V to 3.3V 800mA (Pack of 5)](<https://www.amazon.com/dp/B01N1I1LXH/_encoding=UTF8?coliid=I1QLGRVNPEC9BW&colid=1JJSTU3ZZ46WB&psc=0>)
+* [MakerSpot 6mm 2 Pin Panel PCB Momentary Tactile Tact Push Button Switch Through Hole Breadboard Friendly x 10 pack](<https://www.amazon.com/dp/B06XT3FLVM/_encoding=UTF8?coliid=IHDJ17G87T353&colid=1JJSTU3ZZ46WB&psc=1>)
+* [DIYmall ESP8266 ESP-01 ESP-01S Breakout Board Breadboard Adapter PCB for Serial Wifi Transceiver Network(pack of 5pcs)](<https://www.amazon.com/dp/B01G6HK3KW/_encoding=UTF8?coliid=I3PB0CYDQEKKIR&colid=1JJSTU3ZZ46WB&psc=0>)
+* [Makerfocus 4pcs ESP8266 ESP-01S WiFi Serial Transceiver Module with 1MB Flash for Arduino](<https://www.amazon.com/dp/B01N98BTRH/_encoding=UTF8?coliid=I39GX8UJJRCBZR&colid=1JJSTU3ZZ46WB&psc=0>)
+* Sensor choices - 
+    * [Gowoops 2 PCS DHT22 Temperature Humidity Sensor Module Digital Measurement for Arduino Raspberry Pi 2 3](<https://www.amazon.com/dp/B073F472JL/_encoding=UTF8?coliid=IMAZ5Q0HI2VAY&colid=1JJSTU3ZZ46WB&psc=0>)
+    * [HiLetgo 1pc DHT22/AM2302 Digital Temperature And Humidity Sensor Module Temperature Humidity Monitor Sensor Replace SHT11 SHT15 for Arduino Electronic Practice DIY](https://www.amazon.com/dp/B01N9BA0O4/_encoding=UTF8?coliid=IUEZTEIDN7FXF&colid=1JJSTU3ZZ46WB&psc=1)
+    * [WINGONEER 5PCS of Temperature Humidity Sensor Module Digital DHT11 for Arduino Raspberry Pi 2 3](<https://www.amazon.com/WINGONEER-Temperature-Humidity-Digital-Raspberry/dp/B06XHJ1BPC/ref=sr_1_2?s=electronics&ie=UTF8&qid=1517210078&sr=1-2&keywords=DHT11>)
+    
+
+My preference of sensors is the DTH22. It seems to have been accuracy and less drift than the DHT11.
 
 ## DHTxx Library Modifications
 
@@ -201,6 +236,8 @@ Commands could be issued from the server that would alter one or more configurat
 # Status (Historical)
 
 The statuses below are listed with the latest status at the top - 
+
+**2017-12-30** : OTA isn't consistent. The devices disappear from the Arduino IDE menu and have to be reconnected via USB/Serial. Further investigation is requried.
 
 **2017-12-26** : All OTA is working, sketches and SPIFFS! Instead of modifying the `ESP8266FS.java` and `platform.txt` I ended up adding the python path to my enviroment path variable. This was only due to the fact that I could not figure out how to *build* the modified flash tool jar file. I understand the process because I was able to get it to build successfully on *Travis CI*. But I could not find a quick way to get the jar file back from it. So after spending a measurable amount of time on this it just seemed quicker (and it was) to just go ahead and modifiy the path variable.
 
