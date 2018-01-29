@@ -31,27 +31,25 @@ livesensor sensorlast;
 
 /*
     Get fresh data from the sensor and save it in the `sensor`
-    object. Also check it for "is a NaN" and if true use the last
-    data read.
+    object. Also check it for "is a NaN" and id it is then
+    return `false` and let the caller decide the next step.
 */
 bool updateSensorData() 
 {
 bool bRet = true;
 
-    // each time we update the data from the sensor increment the
-    // sequence number. this will assist in determining data updates vs
-    // data reports.
-    sensor.seq += 1;
-    if(!checkDebugMute()) Serial.println("updateSensorData() - " + String(sensor.seq));
-
     // read values from the sensor
     sensor.h = dht.readHumidity();
     sensor.t = dht.readTemperature(!(scfg.scale == "F" ? false : true));
 
-    if(!checkDebugMute()) Serial.println(String(sensor.t) + "  " + String(sensor.h) + "    " + String((isnan(sensor.t) || isnan(sensor.h)) ? "NaN!" : "ok")  + "    " + String(sensor.nancount));
-
     if(isnan(sensor.t) || isnan(sensor.h))
     {
+        sensor.nancount += 1;
+
+        if(!checkDebugMute()) Serial.println("updateSensorData() - nancount = " + String(sensor.nancount));
+
+        // if/when we get a good data reading this will make
+        // sure that chkReport() will return 'true'
         sensor.h = sensorlast.t = 0;
         sensor.t = sensorlast.h = 0;
 
@@ -61,9 +59,22 @@ bool bRet = true;
         {
             sendStatus("SENSOR_ERROR", "Too many NaN readings from sensor");
             sensor.nancount = 0;
-        } else sensor.nancount += 1;
-    } else sensor.nancount = 0;
+        }
 
+    } else {
+        // if any previous readings were NaN then announce
+        // that we've recovered and have good data
+        if(sensor.nancount > 0)
+        {
+            sendStatus("SENSOR_RECOVER", "Recovered after NaN from sensor");
+            sensor.nancount = 0;
+        }
+        // each time we successfully update the data from the sensor increment 
+        // the sequence number. this will assist in determining data updates vs
+        // data reports.
+        sensor.seq += 1;
+        if(!checkDebugMute()) Serial.println("updateSensorData() - " + String(sensor.seq) + "   " + String(sensor.t) + "  " + String(sensor.h));
+    }
     return bRet;
 }
 
@@ -124,36 +135,39 @@ String sensorData;
     {
         // update the sensor data, if an error occured then 
         // change the interval between retries... success?
-        if(updateSensorData()) sensor.nextup = scfg.interval + millis();
-        else sensor.nextup = scfg.error_interval + millis();
-
-        if(!checkDebugMute())
+        if(updateSensorData()) 
         {
-            Serial.println("last - " + String(sensorlast.t) + "  " + String(sensorlast.h));
-            Serial.println("live - " + String(sensor.t) + "  " + String(sensor.h));
-        }
+            // success!
+            sensor.nextup = scfg.interval + millis();
 
-        // if the WiFi is connected and we're supposed to report the values...
-        if(connWiFi->GetConnInfo(&conn) && chkReport())
-        {
-            // construct the JSON string with our data inside...
-            //
-            // example : {"dev_id":"ESP_290767","t":71.5,"h":37.40,"scale":"F"}
-            sensorData = "{\"dev_id\":\"" + conn.hostname + "\"";
-            // 'app_id' currently not used, removed from sensor data.
-            //sensorData = sensorData + ",\"app_id\":\"" + a_cfgdat->getAppName() + "\"";
-            // convenient for tracking data updates vs. data reports
-            sensorData = sensorData + ",\"seq\":" + String(sensor.seq);
-            sensorData = sensorData + ",\"t\":" + String(sensor.t) + ",\"h\":" + String(sensor.h);
-            sensorData = sensorData + "}";
-
-            int sent = sendUDP((char *)sensorData.c_str(), strlen(sensorData.c_str()));
-            if(sent > 0)
+            if(!checkDebugMute())
             {
-                bRet = true;
-                if(!checkDebugMute()) Serial.println("data - " + sensorData);
+                Serial.println("last - " + String(sensorlast.t) + "  " + String(sensorlast.h));
+                Serial.println("live - " + String(sensor.t) + "  " + String(sensor.h));
             }
-        }
+    
+            // if the WiFi is connected and we're supposed to report the values...
+            if(connWiFi->GetConnInfo(&conn) && chkReport())
+            {
+                // construct the JSON string with our data inside...
+                //
+                // example : {"dev_id":"ESP_290767","t":71.5,"h":37.40,"scale":"F"}
+                sensorData = "{\"dev_id\":\"" + conn.hostname + "\"";
+                // 'app_id' currently not used, removed from sensor data.
+                //sensorData = sensorData + ",\"app_id\":\"" + a_cfgdat->getAppName() + "\"";
+                // convenient for tracking data updates vs. data reports
+                sensorData = sensorData + ",\"seq\":" + String(sensor.seq);
+                sensorData = sensorData + ",\"t\":" + String(sensor.t) + ",\"h\":" + String(sensor.h);
+                sensorData = sensorData + "}";
+    
+                int sent = sendUDP((char *)sensorData.c_str(), strlen(sensorData.c_str()));
+                if(sent > 0)
+                {
+                    bRet = true;
+                    if(!checkDebugMute()) Serial.println("data - " + sensorData);
+                } else if(!checkDebugMute()) Serial.println("sendUDP() failed, sent = " + String(sent));
+            }
+        } else sensor.nextup = scfg.error_interval + millis();
     }
     return bRet;
 }
