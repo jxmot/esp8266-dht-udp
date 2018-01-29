@@ -83,7 +83,7 @@ bool ConnectWiFi::connectToAP(const char *ssid, const char *passw)
     currwifi.hostname = String(WiFi.hostname());
 //#endif
 //#ifdef ARDUINO_ESP8266_ESP01
-//    currwifi.hostname = "ESP01_";
+//    currwifi.hostname = "ESP_";
 //#endif
     // Keep trying to connect until either we're successful or
     // we've run out of attempts
