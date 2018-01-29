@@ -16,6 +16,7 @@ class livesensor {
         float h = 0.0;
         unsigned long nextup = 0;
         int16_t nancount = 0;
+        int16_t errcount = 0;
 };
 
 #ifdef __cplusplus

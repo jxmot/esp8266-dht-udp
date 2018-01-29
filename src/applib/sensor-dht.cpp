@@ -59,15 +59,16 @@ bool bRet = true;
         {
             sendStatus("SENSOR_ERROR", "Too many NaN readings from sensor");
             sensor.nancount = 0;
+            sensor.errcount += 1;
         }
 
     } else {
         // if any previous readings were NaN then announce
         // that we've recovered and have good data
-        if(sensor.nancount > 0)
+        if(sensor.errcount > 0)
         {
-            sendStatus("SENSOR_RECOVER", "Recovered after NaN from sensor");
-            sensor.nancount = 0;
+            sendStatus("SENSOR_RECOVER", "Recovered after NaN from sensor - errcount = " + String(sensor.errcount));
+            sensor.errcount = 0;
         }
         // each time we successfully update the data from the sensor increment 
         // the sequence number. this will assist in determining data updates vs
