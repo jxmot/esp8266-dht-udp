@@ -35,5 +35,5 @@ client.on('message', (payload, remote) => {
     var message = payload.filter(letter => letter !== 0);
     console.log(`multicast received : [${message}] from ${remote.address}:${remote.port}`);
 });
-// all intercaces
+// all interfaces
 client.bind(port);
