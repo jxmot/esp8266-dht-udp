@@ -607,12 +607,40 @@ bool checkDebugMute()
     return true;
 }
 
+#define QUERY_SERVER
+#ifdef QUERY_SERVER
+void queryServer(String);
+#endif
+
 /*
     send a UDP multi-cast to any interested clients
 */
 void ready()
 {
+#ifdef QUERY_SERVER
+    queryServer("REQ_IP");
+#else
     sendStatus("APP_READY");
+#endif
+}
+
+/*
+*/
+void queryServer(String query)
+{
+    sendStatus(query);
+    while(true) {
+        yield();
+        if(recvUDP() > 0) 
+        {
+            Serial.println();
+            Serial.println("queryServer() reply - " + String((char *)&readBuffer[0]));
+            sendStatus("APP_READY");
+            break;
+        }
+        Serial.print(".");
+        delay(100);
+    }
 }
 
 /*
@@ -626,8 +654,6 @@ String statusData;
     // connected?
     if(connWiFi->GetConnInfo(&conn)) 
     {
-        // 'app_id' is currently not used, removed from sensor data.
-        //statusData = "{\"dev_id\":\"" + conn.hostname + "\",\"app_id\":\"" + a_cfgdat->getAppName() + "\"";
         statusData = "{\"dev_id\":\"" + conn.hostname + "\"";
         statusData = statusData + ",\"status\":\"" + status + "\"";
         if(strlen(msg.c_str()) > 0) statusData = statusData + ",\"msg\":\"" + msg + "\"";
