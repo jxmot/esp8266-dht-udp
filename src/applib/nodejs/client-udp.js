@@ -64,15 +64,9 @@ triggerUDP.on('sendUDP', () => {
     Reply Received Event Handler
 */
 client.on('message', (payload, remote) => {
-
-    // `payload` arrives as Uint8Array[75], the unused elements are set to
-    // 0 (zero). However when it's time to convert to a string the length 
-    // of the array is carried through. And the resulting string (even after
-    // trimming) will also be 75 in length - 
-    // console.log(`client got reply : [${payload.toString().trim()}] from ${remote.address}:${remote.port}`);
-    
     // the correct way to extract a string from the payload is this - 
     var message = payload.filter(letter => letter !== 0);
+
     console.log(`client got reply : [${message}] from ${remote.address}:${remote.port}`);
     
     if(cfg.repeat === undefined) process.exit();
