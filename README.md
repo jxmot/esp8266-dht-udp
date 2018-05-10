@@ -76,7 +76,7 @@ The `data/wificfg.dat` file contains one or more WiFi SSIDs and passwords. Here 
 ],"apcount":2}
 ```
 
-The code responsible for connecting to an access point will multiple attempts. This is describe in the README of the [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. 
+The code responsible for connecting to an access point will multiple attempts. This is described in the README of the [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. 
 
 To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.data` file to access the correct file.
 
@@ -181,7 +181,7 @@ I usually don't like to wait very long for parts and components, so I normally u
     * [Wall Charger Abosi 3 Pack 5V 1A UL Certified Universal Power Adapter USB 1 Port Home Wall Charger Plug Compatible with iPhone Samsung and More Device UL Listed (AB-65)](<https://www.amazon.com/gp/product/B076C6PW2V/ref=oh_aui_detailpage_o02_s00?ie=UTF8&th=1>)
     * [Rankie 3-Pack 3ft Micro USB Cable High Speed Data and Charging (Black)](<https://www.amazon.com/gp/product/B00UFG5GVM/ref=oh_aui_detailpage_o04_s00?ie=UTF8&psc=1>)
 
-My preference of sensors is the DTH22. It seems to have been accuracy and less drift than the DHT11.
+My preference of sensors is the DTH22. It seems to have better accuracy and less drift than the DHT11.
 
 ## DHTxx Library Modifications
 
