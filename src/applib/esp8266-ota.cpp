@@ -79,9 +79,9 @@ void initOTA()
     // check the WiFi connection and then read, parse, 
     // and save the config data
 #ifdef CONFIG_DEMO
-    if(connWiFi->IsConnected() && setupOTA("/otacfg.dat"))
+    if(connWiFi->IsConnected() && setupOTA("/otacfg.json"))
 #else
-    if(connWiFi->IsConnected() && setupOTA("/_otacfg.dat"))
+    if(connWiFi->IsConnected() && setupOTA("/_otacfg.json"))
 #endif
     {
         otaWaitUntil = millis() + cfg.otadur;

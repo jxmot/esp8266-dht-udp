@@ -75,15 +75,15 @@ void setupStart()
 void setupConfig()
 {
 #ifdef CONFIG_DEMO
-    if(setupApp("/appcfg.dat")) 
+    if(setupApp("/appcfg.json")) 
     {
-        if(setupWiFi("/wificfg.dat")) 
+        if(setupWiFi("/wificfg.json")) 
         {
-            if(!setupClient("/clientcfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
-            else if(!setupMultiCast("/multicfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
-            else if(!setupSensor("/sensorcfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
+            if(!setupClient("/clientcfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
+            else if(!setupMultiCast("/multicfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
+            else if(!setupSensor("/sensorcfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
 #else
-    if(setupApp("/_appcfg.dat")) 
+    if(setupApp("/_appcfg.json")) 
     {
         // NOTE: The .gitignore in this repo is configured to ignore ALL
         // files that start with an underscore ('_'). This allows for

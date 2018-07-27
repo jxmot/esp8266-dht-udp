@@ -1,0 +1,8 @@
+{
+    "appname":"Your App Name Here",
+    "debugmute":false,
+    "wificonfig":"/wificfg.json",
+    "clientconfig":"/clientcfg.json",
+    "mcastconfig":"/multicfg.json",
+    "sensorconfig":"/sensorcfg.json"
+}
