@@ -609,7 +609,10 @@ bool checkDebugMute()
 
 #define QUERY_SERVER
 #ifdef QUERY_SERVER
-void queryServer(String);
+#include "ParseIPReply.h"
+ParseIPReply *pr = new ParseIPReply();
+
+bool queryServer(String, String &);
 #endif
 
 /*
@@ -618,30 +621,58 @@ void queryServer(String);
 void ready()
 {
 #ifdef QUERY_SERVER
-    queryServer("REQ_IP");
+String data = "";
+ipreply r;
+
+    if(queryServer("REQ_IP", data)) 
+    {
+        if(data.indexOf("IP_ADDR") > 0)
+        {
+            r = pr->parseReply(data);
+            setUDP(r.ip, r.port);
+        }
+    }
 #else
     sendStatus("APP_READY");
 #endif
 }
 
+#ifdef QUERY_SERVER
 /*
 */
-void queryServer(String query)
+bool queryServer(String query, String &datain)
 {
-    sendStatus(query);
-    while(true) {
-        yield();
-        if(recvUDP() > 0) 
-        {
-            Serial.println();
-            Serial.println("queryServer() reply - " + String((char *)&readBuffer[0]));
-            sendStatus("APP_READY");
-            break;
+conninfo conn;
+bool bRet = false;
+
+    // connected?
+    if(connWiFi->GetConnInfo(&conn))
+    {
+        int port = 43210;
+        beginUDP(port);
+        sendStatus(query, String(port));
+        while(true) {
+            yield();
+            if(recvUDP() > 0) 
+            {
+                if(!checkDebugMute()) 
+                {
+                    Serial.println();
+                    Serial.println("queryServer() reply - " + String((char *)&readBuffer[0]));
+                }
+                sendStatus("APP_READY");
+                datain = (char *)&readBuffer[0];
+                bRet = true;
+                break;
+            }
+            if(!checkDebugMute()) Serial.print(".");
+            delay(250);
         }
-        Serial.print(".");
-        delay(100);
+        //stopUDP();
     }
+    return bRet;
 }
+#endif
 
 /*
     Send a status message via UDP multicast
