@@ -69,12 +69,12 @@ String lasterr = "";
 #endif
 
     // NOTE: using the LED toggle interval value to indicate 
-    // an error comes from a prior interation of this code. 
+    // an error comes from a prior iteration of this code. 
     // however this application only flashes the LED if an
     // error has non-recoverable occurred. such errors include :
     //      * missing or invalid config file(s)
     //      * a received UDP packet length exceeded the buffer size
-    //      * could not initialize for UDP
+    //      * could not initialize UDP
     if(toggInterv == ERR_TOGGLE_INTERVAL)
     {
 #ifdef ARDUINO_ESP8266_NODEMCU
