@@ -46,6 +46,9 @@ bool bRet = true;
     {
         sensor.nancount += 1;
 
+        if(!checkDebugMute()) sendStatus("SENSOR_FAULT", "NaN " + String(isnan(sensor.t)) + "  "  + String(isnan(sensor.h)));
+        sendStatus("SENSOR_FAULT", "NaN " + String(sensor.nancount));
+
         if(!checkDebugMute()) Serial.println("updateSensorData() - nancount = " + String(sensor.nancount));
 
         // if/when we get a good data reading this will make
@@ -67,8 +70,10 @@ bool bRet = true;
         // that we've recovered and have good data
         if(sensor.errcount > 0)
         {
-            sendStatus("SENSOR_RECOVER", "Recovered after NaN from sensor - errcount = " + String(sensor.errcount));
+            if(!checkDebugMute()) sendStatus("SENSOR_RECOVER", "Recovered after NaN from sensor - errcount = " + String(sensor.errcount));
+            sendStatus("SENSOR_RECOVER", "nancount = " + String(sensor.nancount));
             sensor.errcount = 0;
+            sensor.nancount = 0;
         }
         // each time we successfully update the data from the sensor increment 
         // the sequence number. this will assist in determining data updates vs
@@ -227,9 +232,10 @@ void startSensor()
         dht.begin(getPin(scfg), getType(scfg));
 
         // "fake" the time, it will force an update
-        // and send...
-        sensor.nextup = 0;
-        sendSensorData();
+        // and send... 30 seconds is long enough to
+        // let the sensor stabilize
+
+        sensor.nextup = 30000 + millis();
     }
 }
 
