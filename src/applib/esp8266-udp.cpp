@@ -71,6 +71,21 @@ int iRet = 0;
     return iRet;
 }
 
+void setUDP(String ip, int port)
+{
+    if(!checkDebugMute()) Serial.println("setUDP() - ip = " + ip + "  port = " + String(port));
+
+    udpClient.label = "udpx";
+    udpClient.addr = ip;
+    udpClient.ipaddr.fromString(ip); 
+    udpClient.port = port;
+}
+
+void beginUDP(int port)
+{
+    udp.begin(port);
+}
+
 /*
     Send a UDP packet...
 */

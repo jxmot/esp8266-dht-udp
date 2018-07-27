@@ -75,15 +75,15 @@ void setupStart()
 void setupConfig()
 {
 #ifdef CONFIG_DEMO
-    if(setupApp("/appcfg.dat")) 
+    if(setupApp("/appcfg.json")) 
     {
-        if(setupWiFi("/wificfg.dat")) 
+        if(setupWiFi("/wificfg.json")) 
         {
-            if(!setupClient("/clientcfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
-            else if(!setupMultiCast("/multicfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
-            else if(!setupSensor("/sensorcfg.dat")) toggInterv = ERR_TOGGLE_INTERVAL;
+            if(!setupClient("/clientcfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
+            else if(!setupMultiCast("/multicfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
+            else if(!setupSensor("/sensorcfg.json")) toggInterv = ERR_TOGGLE_INTERVAL;
 #else
-    if(setupApp("/_appcfg.dat")) 
+    if(setupApp("/_appcfg.json")) 
     {
         // NOTE: The .gitignore in this repo is configured to ignore ALL
         // files that start with an underscore ('_'). This allows for
@@ -228,7 +228,7 @@ bool bRet = false;
     a_cfgdat = new AppCfgData((const char *)appCfgFile.c_str());
 
     // check for errors
-    if(!a_cfgdat->getError(errMsg)) 
+    if(a_cfgdat->getError(errMsg) == 0) 
     {
         // success, parse the JSON string
         a_cfgdat->parseFile();
@@ -609,7 +609,10 @@ bool checkDebugMute()
 
 #define QUERY_SERVER
 #ifdef QUERY_SERVER
-void queryServer(String);
+#include "ParseIPReply.h"
+ParseIPReply *pr = new ParseIPReply();
+
+bool queryServer(String, String &);
 #endif
 
 /*
@@ -618,30 +621,58 @@ void queryServer(String);
 void ready()
 {
 #ifdef QUERY_SERVER
-    queryServer("REQ_IP");
+String data = "";
+ipreply r;
+
+    if(queryServer("REQ_IP", data)) 
+    {
+        if(data.indexOf("IP_ADDR") > 0)
+        {
+            r = pr->parseReply(data);
+            setUDP(r.ip, r.port);
+        }
+    }
 #else
     sendStatus("APP_READY");
 #endif
 }
 
+#ifdef QUERY_SERVER
 /*
 */
-void queryServer(String query)
+bool queryServer(String query, String &datain)
 {
-    sendStatus(query);
-    while(true) {
-        yield();
-        if(recvUDP() > 0) 
-        {
-            Serial.println();
-            Serial.println("queryServer() reply - " + String((char *)&readBuffer[0]));
-            sendStatus("APP_READY");
-            break;
+conninfo conn;
+bool bRet = false;
+
+    // connected?
+    if(connWiFi->GetConnInfo(&conn))
+    {
+        int port = 43210;
+        beginUDP(port);
+        sendStatus(query, String(port));
+        while(true) {
+            yield();
+            if(recvUDP() > 0) 
+            {
+                if(!checkDebugMute()) 
+                {
+                    Serial.println();
+                    Serial.println("queryServer() reply - " + String((char *)&readBuffer[0]));
+                }
+                sendStatus("APP_READY");
+                datain = (char *)&readBuffer[0];
+                bRet = true;
+                break;
+            }
+            if(!checkDebugMute()) Serial.print(".");
+            delay(250);
         }
-        Serial.print(".");
-        delay(100);
+        //stopUDP();
     }
+    return bRet;
 }
+#endif
 
 /*
     Send a status message via UDP multicast
@@ -664,93 +695,6 @@ String statusData;
         if(strlen(statusData.c_str()) <= UDP_PAYLOAD_SIZE) multiUDP((char *)statusData.c_str(), strlen(statusData.c_str()));
         else if(!checkDebugMute()) Serial.println("sendStatus() - NOT sent, too long");
     }
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-// This function is intended for use when we're behaving as a UDP server. It
-// is not "complete", and would require additional code internally and 
-// externally. 
-/*
-*/
-// the test data (a string) that we'll send to the server
-char *testReply = "GOT it!!! 1 2 3 4\00";
-
-int handleComm()
-{
-String func = String(__func__);
-
-int sent = 0;
-int rcvd = 0;
-String temp;
-
-    rcvd = recvUDP();
-
-    if((rcvd <= UDP_PAYLOAD_SIZE) && (rcvd > 0))
-    {
-        // if we're a server then we're not a client (at 
-        // this time)
-        if(s_cfgdat != NULL)
-        {
-            // decode the UDP payload contents
-    
-            // act on the contents
-    
-            // reply to the contents...
-    
-            // a "test" reply, comment out later
-            sent = replyUDP(testReply, strlen(testReply));
-    
-            // if debug mute is off then show some info...
-            if(!checkDebugMute())
-            {
-                Serial.println();
-                Serial.println(func + " - rcvd = " + String(rcvd));
-        
-                // NOTE: It was assumed that the UDP packet contained a 
-                // string of characters. The string could contain anything 
-                // (up to udp-defs.h:UDP_PAYLOAD_SIZE bytes in size) even
-                // a JSON string. The string MUST be NULL terminated, there's 
-                // more info in esp8266-udp.cpp
-                temp = String((char *)&readBuffer[0]);
-        
-                Serial.println(func + " - data = " + temp);
-                Serial.println();
-                Serial.println(func + " - sent  = " + String(sent));
-                // a "test" reply, comment or change out later
-                Serial.println(func + " - reply = " + String(testReply));
-                Serial.println();
-                Serial.flush();
-            }
-        }
-        else
-        {
-            if(c_cfgdat != NULL)
-            {
-                // received a reply from a server...
-                // if debug mute is off then show some info...
-                if(!checkDebugMute())
-                {
-                    Serial.println();
-                    Serial.println(func + " - rcvd = " + String(rcvd));
-                    temp = String((char *)&readBuffer[0]);
-                    Serial.println(func + " - data = " + temp);
-                    Serial.println();
-                    Serial.flush();
-                }
-            }
-        }
-    } else if(rcvd)
-    {
-        printError(String(__func__), "UDP received packet too long - " + String(rcvd));
-        printError(String(__func__), "Setting error state.");
-        toggInterv = ERR_TOGGLE_INTERVAL;            
-    } else if(c_cfgdat != NULL)
-    {
-        // check the send queue, send if there's something
-        // there...
-    }
-    return rcvd;
 }
 
 #ifdef __cplusplus

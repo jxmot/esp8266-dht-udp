@@ -12,6 +12,10 @@
 //#define MAX_FILE_SIZE   1024
 #define MAX_FILE_SIZE   4096
 
+#define CFGDAT_FILENOTFOUND -1
+#define CFGDAT_FILENOTOPEN -2
+#define CFGDAT_FILETOOLARGE -3
+
 class ConfigData {
     
     public:

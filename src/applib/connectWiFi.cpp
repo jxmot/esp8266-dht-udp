@@ -7,6 +7,7 @@
 #include <ESP8266WiFi.h>
 
 #include "connectWiFi.h"
+#include "MimicCfgData.h"
 
 /*
     Construct the object and connect to the access point. Optionally return
@@ -17,6 +18,17 @@ ConnectWiFi::ConnectWiFi(const char *ssid, const char *passw, conninfo *info)
     // connect to the access point
     if(connectToAP(ssid, passw))
     {
+        // see if there's a device that we are to mimic
+        String mimic;
+        String cfg = "/_" + currwifi.hostname + ".json";
+        MimicCfgData *cfgdat = new MimicCfgData((const char *)(cfg.c_str()), true);
+        if(cfgdat->isMimic(mimic) == true) 
+        {
+            //Serial.println("Device "+currwifi.hostname+" will mimic "+mimic);
+            currwifi.hostname = mimic;
+        }
+        delete cfgdat;
+
         // success, is caller requesting the connection info?
         if(info != NULL)
         {
@@ -74,17 +86,17 @@ bool ConnectWiFi::connectToAP(const char *ssid, const char *passw)
 
 // NOTE: It seems that the ESP-01 will throw an exception when
 // WiFi.hostname() is called the *first time* during it's very
-// first skectch that connects to WiFi. And after it's very 
+// first sketch that connects to WiFi. And after it's very 
 // first successful WiFi AP connection it doesn't throw the
 // exception anymore.
 //
-//#ifdef ARDUINO_ESP8266_NODEMCU
+#ifdef ARDUINO_ESP8266_NODEMCU
     // get the current hostname
     currwifi.hostname = String(WiFi.hostname());
-//#endif
-//#ifdef ARDUINO_ESP8266_ESP01
-//    currwifi.hostname = "ESP_";
-//#endif
+#endif
+#ifdef ARDUINO_ESP8266_ESP01
+    currwifi.hostname = "ESP_";
+#endif
     // Keep trying to connect until either we're successful or
     // we've run out of attempts
     while(true) 
@@ -111,11 +123,11 @@ bool ConnectWiFi::connectToAP(const char *ssid, const char *passw)
                 currwifi.macAddress = WiFi.macAddress();
                 currwifi.isConnected = true;
                 currwifi.rssi = WiFi.RSSI();
-//#ifdef ARDUINO_ESP8266_ESP01
-//                String tmp = String(currwifi.mac[3],HEX) + String(currwifi.mac[4],HEX) + String(currwifi.mac[5],HEX);
-//                tmp.toUpperCase();
-//                currwifi.hostname = currwifi.hostname + tmp;
-//#endif
+#ifdef ARDUINO_ESP8266_ESP01
+                String tmp = String(currwifi.mac[3],HEX) + String(currwifi.mac[4],HEX) + String(currwifi.mac[5],HEX);
+                tmp.toUpperCase();
+                currwifi.hostname = currwifi.hostname + tmp;
+#endif
                 return(true);
             }
         }
@@ -138,7 +150,6 @@ void ConnectWiFi::initCurrWiFi(const char *ssid, const char *passw)
     currwifi.passw      = String(passw);
     currwifi.localIP    = "";
     currwifi.macAddress = "";
-    for(int ix = 0; ix < MAC_SIZE; ix++) currwifi.mac[ix] = 0;
 
     currwifi.timeToConnect = 0;
     currwifi.attempts      = 1;

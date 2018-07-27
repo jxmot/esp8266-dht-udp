@@ -12,7 +12,8 @@ extern "C" {
 #endif
 
 extern int initUDP();
-
+extern void setUDP(String, int);
+extern void beginUDP(int port);
 extern int sendUDP(char *payload, int len, char *endpoint = NULL);
 extern int replyUDP(char *payload, int len);
 extern int recvUDP();
