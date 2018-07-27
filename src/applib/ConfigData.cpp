@@ -53,7 +53,7 @@ bool bRet = false;
         cfgData = File(NULL);
 
         // it didn't open, note the likely error.
-        error = -1;
+        error = CFGDAT_FILENOTFOUND;
         errmsg = "The configuration data file [" + String(cfgfile) + "] doesn't exist.";
     }
     return bRet;
@@ -66,7 +66,7 @@ bool bRet = false;
     if (!cfgData) 
     {
         // it didn't open, note the likely error.
-        error = -2;
+        error = CFGDAT_FILENOTOPEN;
         errmsg = "The configuration data file is not open.";
     }
     else
@@ -76,7 +76,7 @@ bool bRet = false;
         if(cfgData.size() > MAX_FILE_SIZE) 
         {
             errmsg = "Configuration file size is too large - " + String(cfgData.size()) + " > " + String(MAX_FILE_SIZE);
-            error = -3;
+            error = CFGDAT_FILETOOLARGE;
 
             cfgData.close();
         }
