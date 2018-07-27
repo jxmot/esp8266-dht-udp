@@ -228,7 +228,7 @@ bool bRet = false;
     a_cfgdat = new AppCfgData((const char *)appCfgFile.c_str());
 
     // check for errors
-    if(!a_cfgdat->getError(errMsg)) 
+    if(a_cfgdat->getError(errMsg) == 0) 
     {
         // success, parse the JSON string
         a_cfgdat->parseFile();
