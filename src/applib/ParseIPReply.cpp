@@ -29,11 +29,15 @@ void ParseIPReply::parseJSON(const char *buf)
 {
     if(!muteDebug)
     {
-        Serial.println();
-        Serial.println("ParseIPReply parsing JSON - ");
-        Serial.println(buf.get());
-        Serial.println();
-        Serial.flush();
+// NOTE: bizarre compile error : 'Serial' was not declared in this scope
+// can't determine the cause.
+//
+//        Serial.println();
+//        Serial.println("ParseIPReply parsing JSON - ");
+//        //Serial.println(buf.get());
+//        Serial.println(buf);
+//        Serial.println();
+//        Serial.flush();
     }
     
     // IMPORTANT : Changes made to the data file should be passed
