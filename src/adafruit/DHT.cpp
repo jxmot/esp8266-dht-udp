@@ -27,7 +27,7 @@ DHT::DHT(void)
   _maxcycles = microsecondsToClockCycles(1000);  // 1 millisecond timeout for
                                                  // reading pulses from DHT sensor.
   // Note that count is now ignored as the DHT reading algorithm adjusts itself
-  // basd on the speed of the processor.
+  // based on the speed of the processor.
 }
 
 void DHT::begin(void) {
@@ -92,7 +92,9 @@ float DHT::convertFtoC(float f) {
 
 float DHT::readHumidity(bool force) {
   float f = NAN;
-  if (read()) {
+// https://github.com/jxmot/esp8266-dht-udp : seems like a bug
+//  if (read()) {
+  if (read(force)) {
     switch (_type) {
     case DHT11:
       f = data[0];
@@ -145,7 +147,9 @@ boolean DHT::read(bool force) {
   // Check if sensor was read less than two seconds ago and return early
   // to use last reading.
   uint32_t currenttime = millis();
-  if (!force && ((currenttime - _lastreadtime) < 2000)) {
+// https://github.com/jxmot/esp8266-dht-udp : try a little longer
+//  if (!force && ((currenttime - _lastreadtime) < 2000)) {
+  if (!force && ((currenttime - _lastreadtime) < 2500)) {
     return _lastresult; // return last correct measurement
   }
   _lastreadtime = currenttime;
@@ -156,7 +160,7 @@ boolean DHT::read(bool force) {
   // Send start signal.  See DHT datasheet for full signal diagram:
   //   http://www.adafruit.com/datasheets/Digital%20humidity%20and%20temperature%20sensor%20AM2302.pdf
 
-  // Go into high impedence state to let pull-up raise data line level and
+  // Go into high impedance state to let pull-up raise data line level and
   // start the reading process.
   digitalWrite(_pin, HIGH);
   delay(250);
