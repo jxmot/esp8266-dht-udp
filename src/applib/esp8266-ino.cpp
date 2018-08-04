@@ -12,12 +12,14 @@
         * Application configuration and set update
         * Miscellaneous support functions.
 
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #include "esp8266-ino.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 // if the application configuration is present, and if the debug mute flag is 
 // true then mute debug output
@@ -639,18 +641,32 @@ ipreply r;
 
 #ifdef QUERY_SERVER
 /*
+    TODO: constants should be defined or configurable
 */
+void sendQuery(String query) 
+{
+    int port = 43210;
+    beginUDP(port);
+    sendStatus(query, String(port));
+}
+
+#define MAX_WAIT 8
+
 bool queryServer(String query, String &datain)
 {
 conninfo conn;
+int waitcount = 0;
 bool bRet = false;
 
     // connected?
     if(connWiFi->GetConnInfo(&conn))
     {
-        int port = 43210;
-        beginUDP(port);
-        sendStatus(query, String(port));
+        //int port = 43210;
+        //beginUDP(port);
+        //sendStatus(query, String(port));
+
+        sendQuery(query);
+
         while(true) {
             yield();
             if(recvUDP() > 0) 
@@ -667,6 +683,13 @@ bool bRet = false;
             }
             if(!checkDebugMute()) Serial.print(".");
             delay(250);
+            waitcount += 1;
+            if(waitcount >= MAX_WAIT)
+            {
+                waitcount = 0;
+                if(!checkDebugMute()) Serial.println("");
+                sendQuery(query);
+            }
         }
         //stopUDP();
     }
