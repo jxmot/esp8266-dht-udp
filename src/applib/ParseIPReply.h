@@ -1,6 +1,8 @@
 /* ************************************************************************ */
 /*
     ParseIPReply.h
+
+    (c) 2018 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #pragma once
 

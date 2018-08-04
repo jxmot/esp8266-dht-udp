@@ -7,9 +7,11 @@
         2) Feature control flags. A "debug mute" is implemented here.
         3) Text message (be careful to not use too much memory!) content.
 
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #include "AppCfgData.h"
 #include <ArduinoJson.h>
+
 
 //////////////////////////////////////////////////////////////////////////////
 /*

@@ -1,6 +1,8 @@
 /* ************************************************************************ */
 /*
     ParseIPReply.cpp
+
+    (c) 2018 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #include "ParseIPReply.h"
 

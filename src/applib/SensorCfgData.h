@@ -5,6 +5,8 @@
 
     For now the choices are DHT22 and DHT11. More will be added later as this
     code evolves.
+
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #pragma once
 

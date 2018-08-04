@@ -2,9 +2,12 @@
 /*
     ClientfgData.h - Intended to provide external server configuration data,
     such as - address and port. 
+
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 #include "ClientCfgData.h"
 #include <ArduinoJson.h>
+
 
 // these are known, but not referenced in the client application
 String ClientCfgData::labels[] = {"udp1","udp2","END"};
