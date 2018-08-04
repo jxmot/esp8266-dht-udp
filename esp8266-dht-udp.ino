@@ -3,6 +3,8 @@
     esp8266-dht-udp.ino - An ESP8266 application that reads the temperature
     and humidity using a DHT22 or DHT11 sensor. The values are sent to a
     server via UDP.
+
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 
 // required include files...
@@ -17,6 +19,26 @@
 
 bool start = false;
 #endif
+
+
+#define HEARTBEAT
+#ifdef HEARTBEAT
+void startHeart();
+void heartBeat();
+
+// can disable sending the heartbeat status
+bool sendbeat = false;
+// toggles on every beat
+bool pulse = true;
+// default rate is 15 sec (very short!)
+// uses (sensor interval * 4) in startHeart()
+unsigned long heartrate = 15000;
+// time of last heartbeat, in milliseconds
+unsigned long lastbeat = 0;
+// count of beats so far
+unsigned long beatcount = 0;
+#endif
+
 /* ************************************************************************ */
 /*
     Application Set Up
@@ -40,6 +62,9 @@ void setup()
     // start up the sensor and begin reading data from it
     startSensor();
 #endif
+#ifdef HEARTBEAT
+    startHeart();
+#endif
 }
 
 /*
@@ -47,6 +72,8 @@ void setup()
 */
 void loop()
 {
+bool datasent = false;
+
 #ifndef ARDUINO_ESP8266_NODEMCU
 static bool error_sent = false;
 String lasterr = "";
@@ -95,8 +122,42 @@ String lasterr = "";
     else
     {
         // read sensor data if it's time and send the new data...
-        sendSensorData();
+        datasent = sendSensorData();
     }
+#ifdef HEARTBEAT
+    // works best when sensor reporting 
+    // mode is "CHG"
+    if(!datasent) heartBeat();
+    else lastbeat = millis();
+#endif
 }
 
+#ifdef HEARTBEAT
+void startHeart()
+{
+    lastbeat  = millis();
+    beatcount = 0;
+    heartrate = getSensorInterval() * 4;
+    Serial.println("heart started, beats @ "+String((float(heartrate/1000)/60))+" min");
+}
 
+void heartBeat()
+{
+sensornow tmp;
+
+    if((lastbeat + heartrate) < millis())
+    {
+        lastbeat = millis();
+        beatcount += 1;
+
+        if(sendbeat) 
+        {
+            sendStatus((pulse ? "TICK" : "TOCK"), "beatcount = "+String(beatcount));
+            pulse = !pulse;
+        }
+
+        readSensorNow(tmp);
+        sendSensorNow(tmp);
+    }
+}
+#endif
