@@ -2,9 +2,7 @@
 /*
     sensor-dht.cpp - support for DHTxx type temperature and humidity sensors.
 
-    To Do : Currently this code can only handle a single sensor during 
-    run-time. Modifiy it to be able to operate on a selected individual 
-    sensor. 
+    (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
 // required include files...
 #include "esp8266-ino.h"
@@ -53,8 +51,8 @@ bool bRet = true;
 
         // if/when we get a good data reading this will make
         // sure that chkReport() will return 'true'
-        sensor.h = sensorlast.t = 0;
-        sensor.t = sensorlast.h = 0;
+        sensor.h = sensorlast.h = 0;
+        sensor.t = sensorlast.t = 0;
 
         bRet = false;
 
@@ -84,6 +82,44 @@ bool bRet = true;
     return bRet;
 }
 
+void readSensorNow(sensornow &_sensor)
+{
+    // read values from the sensor
+    _sensor.hnow = dht.readHumidity();
+    _sensor.tnow = dht.readTemperature(!(scfg.scale == "F" ? false : true));
+    if(isnan(_sensor.hnow) || isnan(_sensor.tnow))
+        _sensor.hnow = _sensor.tnow = 0;
+
+    // also provide the last readings and seq #
+    _sensor.hlast = sensorlast.h;
+    _sensor.tlast = sensorlast.t;
+    _sensor.seq   = sensorlast.seq = (sensor.seq += 1);
+}
+
+bool sendSensorNow(sensornow _sensor)
+{
+bool bRet = false;
+conninfo conn;
+String sensorData;
+
+    // if the WiFi is connected...
+    if(connWiFi->GetConnInfo(&conn))
+    {
+        // construct the JSON string with our data inside...
+        //
+        // example : {"dev_id":"ESP_290767","seq":1,"t":71.5,"h":37.40}
+        sensorData = "{\"dev_id\":\"" + conn.hostname + "\"";
+        sensorData = sensorData + ",\"seq\":" + String(_sensor.seq);
+        sensorData = sensorData + ",\"t\":" + String(_sensor.tnow) + ",\"h\":" + String(_sensor.hnow);
+        sensorData = sensorData + ",\"last\":{\"t\":"+ String(_sensor.tlast) + ",\"h\":" + String(_sensor.hlast) +"}";
+        sensorData = sensorData + "}";
+
+        int sent = sendUDP((char *)sensorData.c_str(), strlen(sensorData.c_str()));
+        if(sent > 0) bRet = true;
+    }
+    return bRet;
+}
+
 /*
     Check the configured reporting type and decide if the data should
     be reported (sent via UDP)
@@ -91,17 +127,29 @@ bool bRet = true;
 bool chkReport()
 {
 bool bRet = false;
-float f_deltaT = ((float)(scfg.delta_t) / 10);
-float f_deltaH = ((float)(scfg.delta_h) / 10);
 
     // report ALL values as they are read
-    if(scfg.report == "ALL") bRet = true;
+    if(scfg.report == "ALL") 
+    {
+        // save the last reading 
+        sensorlast = sensor;
+        bRet = true;
+    }
     else
     {
+        float f_deltaT = ((float)(scfg.delta_t) / 10);
+        float f_deltaH = ((float)(scfg.delta_h) / 10);
+
         // report only if a change was detected...
         if(scfg.report == "CHG")
         {
             // calculate the amount of change (if any)
+            // NOTE: Small incremental (below delta
+            // threshold) will not be sent. Then it's 
+            // possible for a sensor to appear "frozen"
+            // and not sending any updates. However a 
+            // small fix by moving "sensorlast = sensor;"
+            // to when the data is actually sent.
             float t_diff = abs(sensor.t - sensorlast.t);
             float h_diff = abs(sensor.h - sensorlast.h);
 
@@ -119,7 +167,8 @@ float f_deltaH = ((float)(scfg.delta_h) / 10);
             }
 
             // save the last reading 
-            sensorlast = sensor;
+            // NOTE: removal should fix frozen sensor, issue #11
+            //sensorlast = sensor;
 
         } else bRet = true;
     }
@@ -169,6 +218,9 @@ String sensorData;
                 int sent = sendUDP((char *)sensorData.c_str(), strlen(sensorData.c_str()));
                 if(sent > 0)
                 {
+                    // NOTE: fixes frozen sensor, issue #11
+                    sensorlast = sensor;
+
                     bRet = true;
                     if(!checkDebugMute()) Serial.println("data - " + sensorData);
                 } else if(!checkDebugMute()) Serial.println("sendUDP() failed, sent = " + String(sent));
@@ -214,6 +266,15 @@ uint8_t type = 0;
     return type;
 }
 
+
+/*
+    Get the sensor read interval
+*/
+unsigned long getSensorInterval()
+{
+    return scfg.interval;
+}
+
 /*
     Start the sensor - finish any necessary initialization and
     get the first data reading.
@@ -226,7 +287,7 @@ void startSensor()
         sens_cfgdat->getSensor(scfg);
 
         // initialize the DHT...
-        // NOTE: the DHT class was orignally authored by AdaFruit. I 
+        // NOTE: the DHT class was originally authored by AdaFruit. I 
         // made a copy and have modified it a little. See the comments
         // in src/adafruit/DHT.*
         dht.begin(getPin(scfg), getType(scfg));
@@ -234,7 +295,6 @@ void startSensor()
         // "fake" the time, it will force an update
         // and send... 30 seconds is long enough to
         // let the sensor stabilize
-
         sensor.nextup = 30000 + millis();
     }
 }
