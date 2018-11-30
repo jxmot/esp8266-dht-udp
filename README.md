@@ -2,6 +2,35 @@
 
 A temperature and humidity sensor using a DHT22/11 device and UDP to transmit the data to a server.
 
+- [History](#history)
+- [Overview](#overview)
+- [Details](#details)
+  * [Operation](#operation)
+    + [Network Traffic](#network-traffic)
+      - [Status Messages](#status-messages)
+      - [Data Messages](#data-messages)
+  * [Configuration](#configuration)
+    + [File Naming Convention](#file-naming-convention)
+    + [Application Configuration](#application-configuration)
+    + [WiFi Configuration](#wifi-configuration)
+    + [UDP Client Configuration](#udp-client-configuration)
+    + [Multi-cast UDP Configuration](#multi-cast-udp-configuration)
+    + [Device Mimic](#device-mimic)
+    + [Sensor Configuration](#sensor-configuration)
+  * [OTA](#ota)
+    + [Configuration](#configuration-1)
+  * [Schematic and Build Details](#schematic-and-build-details)
+    + [Finished Sensor Devices](#finished-sensor-devices)
+    + [Parts List and Sources](#parts-list-and-sources)
+  * [DHTxx Library Modifications](#dhtxx-library-modifications)
+- [Future Modifications](#future-modifications)
+  * [Application Version](#application-version)
+  * [Configuration File Naming](#configuration-file-naming)
+  * [Run-time Configuration](#run-time-configuration)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 # History
 
 I had been tinkering with using an ESP8266 and a temperature/humidity sensor to record data within my home. I hadn't really moved forward with it until the end of December 2017. And what really prompted me to move forward with the project was the brutally cold temperatures we experienced in Chicago. I was concerned about water pipes freezing, or my furnace breaking down. So the completion of this project (*sensors, server, database, and web client*) became *very* important. Fortunately no pipes froze, and my furnace continued working! I was luckier than some of my neighbors!
@@ -31,6 +60,7 @@ Here are some examples of the status messages that a sensor device might send -
 * Device successful start - `{"dev_id":"ESP_49ECF6","status":"APP_READY"}`
 * Device sensor error - `{"dev_id":"ESP_49ECF6","status":"SENSOR_ERROR","msg":"Too many NaN readings from sensor"}`
 * Device sensor recovery - `{"dev_id":"ESP_49ECF6","status":"SENSOR_RECOVER","msg":"Recovered after NaN from sensor"}`
+* Device heartbeat - **heartbeat, issue #5 info goes here**
 
 #### Data Messages
 
@@ -82,6 +112,8 @@ To keep the contents of this file secure make a copy of it and prepend the under
 
 ### UDP Client Configuration
 
+**Issue #6 info goes here**
+
 The `data/clientcfg.dat` file contains one or more entries that each contain the IP address and port number of a UDP enabled server that the application can access. Here are the contents of the sample `clientcfg.dat` file -
 
 ```json
@@ -114,20 +146,11 @@ The `data/multicfg.dat` file contains the IP address and port number for the int
 
 This file does not contain sensitive configuration data. So it is not necessary to prepend the underscore to its name.
 
+### Device Mimic
+
+**details for issue #7 go here**
+
 ### Sensor Configuration
-
-The `data/sensorcfg.dat` file contains the configure the application for one of two specific temperature/humdity sensors - 
-
-* Sensor type, either `"DHT11"` or `"DHT22"`. At this time these are the only sensors supported.
-* EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor. 
-    * **NOTE** : This pin setting is ignored if an ESP-01 is used. On that platform GPIO2 will be used instead and is not configurable. See `sensor-dht.cpp` and look for `ARDUINO_ESP8266_ESP01` for the associated code.
-* Temperature scale, this is used to select Fahrenheit or Celsius.
-* Sensor reading interval, this is the duration in milliseconds between subsequent sensor data readings.
-* Sensor retry interval, this is the duration in milliseconds between subsequent sensor data readings when an error (*typically the sensor will return NaN*) occurs.
-* Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
-    * `"ALL"` - report the sensor data *every time* the sensor data is read.
-    * `"CHG"` - only report sensor data *if* the temperature or humidity values have changed.
-* If the reporting type is `"CHG"` then this is the amount of required change before the temperature or humidity are reported. The integer value kept here is divided by 10 to create a floating point value. Then if the amount of change (*temperature or humidity*) is greater then the data is sent.
 
 Here are the contents of the `sensorcfg.dat` file -
 
@@ -144,6 +167,20 @@ Here are the contents of the `sensorcfg.dat` file -
 }
 ```
 
+The `data/sensorcfg.dat` file contains the configure the application for one of two specific temperature/humdity sensors - 
+
+* **`type`** - Sensor type, either `"DHT11"` or `"DHT22"`. At this time these are the only sensors supported.
+* **`pin`** - EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor. 
+    * **NOTE** : This pin setting is ignored if an ESP-01 is used. On that platform GPIO2 will be used instead and is not configurable. See `sensor-dht.cpp` and look for `ARDUINO_ESP8266_ESP01` for the associated code.
+* **`scale`** - Temperature scale, this is used to select Fahrenheit or Celsius.
+* **`interval`** - Sensor reading interval, this is the duration in milliseconds between subsequent sensor data readings.
+* **`error_interval`** - Sensor retry interval, this is the duration in milliseconds between subsequent sensor data readings when an error (*typically the sensor will return NaN*) occurs.
+* **`report`** - Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
+    * `"ALL"` - report the sensor data *every time* the sensor data is read.
+    * `"CHG"` - only report sensor data *if* the temperature or humidity values have changed.
+* **`delta_t`** & **`delta_h`** - If the reporting type is `"CHG"` then this is the amount of required change before the temperature or humidity are reported. The integer value kept here is divided by 10 to create a floating point value. Then if the amount of change (*temperature or humidity*) is greater then the data is sent.
+
+
 This file does not contain sensitive configuration data. So it is not necessary to prepend the underscore to its name.
 
 ## OTA
@@ -155,6 +192,8 @@ I experimented with OTA with limited results. And the device would not appear re
 The OTA configuration is located in `data/otacfg.dat`. At this time only the `otadur` is used. It is the amount of time that the device will wait for OTA to begin *before* it starts the application.
 
 ## Schematic and Build Details
+
+**schematic goes here**
 
 ### Finished Sensor Devices
 
@@ -242,56 +281,4 @@ Commands could be issued from the server that would alter one or more configurat
     * delta
 * *TBD*
 
-# Status (Historical)
-
-The statuses below are listed with the latest status at the top - 
-
-**2017-12-30** : OTA isn't consistent. The devices disappear from the Arduino IDE menu and have to be reconnected via USB/Serial. Further investigation is requried.
-
-**2017-12-26** : All OTA is working, sketches and SPIFFS! Instead of modifying the `ESP8266FS.java` and `platform.txt` I ended up adding the python path to my enviroment path variable. This was only due to the fact that I could not figure out how to *build* the modified flash tool jar file. I understand the process because I was able to get it to build successfully on *Travis CI*. But I could not find a quick way to get the jar file back from it. So after spending a measurable amount of time on this it just seemed quicker (and it was) to just go ahead and modifiy the path variable.
-
-**2017-12-25** : OTA updates for sketches is working. SPIFFS, not so much. The problem can be fixed by making a couple of modifications - 
-
-* The file `C:\Users\SOME_USER\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.3.0\platform.txt` requires that the line - 
-
-`tools.esptool.network_cmd.windows=python.exe`
-
-be changed to - 
-
-`tools.esptool.network_cmd.windows=C:\Python27amd64\python.exe`
-
-The reason for the change is how python was installed. In my case it was installed after the Arduino IDE and it was installed as part of a **Microsoft Visual Studio Community Edition** installation. When that occurred two versions of python were installed, 2.7 and 3.6. And neither are in the Windows `path`. I could have modified the `path` but it would be difficult to know immediately if there were any side effects in regards to Visual Studio. So that made my other option to be the modification of settings in the Arduino IDE. And that would be isolated and have no external side effects.
-
-* SPIFFS download tool - The one I'm using is found at <https://github.com/esp8266/arduino-esp8266fs-plugin>. And it's java source file `ESP8266FS.java` requires a small modification - 
-
-The line that reads - 
-
-`pythonCmd = "python.exe";`
-
-should be changed to - 
-
-`pythonCmd = PreferencesData.get("tools.esptool.network_cmd.windows");`
-
-**NOTE** : This has not been tested yet, I'll have to build and test it.
-
-
-**2017-12-23** : So far, so good! The code will run on NodeMCU *and* ESP-01S! At this point the following is working - 
-
-* On power up and configuration a *UDP multi-cast* packet is sent. It's purpose is to identify the device and announce that is is "ready".
-* Uses configuration file(s) to specify the type and pin number used by the DHTxx sensor.
-* Uses configuration file(s) to specify the interval between sensor readings
-* Sends a UDP packet to a configured server, does not require a reply from the server.
-* Using `#ifdef` to build differently for NodeMCU vs ESP-01
-
-**To Do** : 
-
-* Implement both configurable reading modes - "ALL" and "CHG". - **DONE**
-* Create a proper README - **WIP**
-* Finish the NodeJS server, it will - 
-    * forward sensor data to - 
-        * IFTTT
-        * a database, mLab or a local MySQL
-        * no storage, but provide live-data html pages
-* consider a redesign where this code becomes "generic" and devices can be server-configured.
-
-
+ 
