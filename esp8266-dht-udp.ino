@@ -6,6 +6,7 @@
 
     (c) 2017 Jim Motyl - https://github.com/jxmot/esp8266-dht-udp
 */
+#define HEARTBEAT
 
 // required include files...
 #include "src/applib/esp8266-ino.h"
@@ -20,8 +21,6 @@
 bool start = false;
 #endif
 
-
-#define HEARTBEAT
 #ifdef HEARTBEAT
 void startHeart();
 void heartBeat();
@@ -139,6 +138,7 @@ void startHeart()
     beatcount = 0;
     heartrate = getSensorInterval() * 4;
     Serial.println("heart started, beats @ "+String((float(heartrate/1000)/60))+" min");
+    sendStatus("INFO", "heartbeats @ "+String((float(heartrate/1000)/60))+" min");
 }
 
 void heartBeat()
@@ -150,12 +150,16 @@ sensornow tmp;
         lastbeat = millis();
         beatcount += 1;
 
+// a "safety", have seen where the heart rate appears
+// to have been shortened by some unknown means. This
+// should reset the rate back to the configured setting.
+        heartrate = getSensorInterval() * 4;
+
         if(sendbeat) 
         {
             sendStatus((pulse ? "TICK" : "TOCK"), "beatcount = "+String(beatcount));
             pulse = !pulse;
         }
-
         readSensorNow(tmp);
         sendSensorNow(tmp);
     }

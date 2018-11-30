@@ -44,7 +44,11 @@ void MimicCfgData::parseJSON(std::unique_ptr<char[]>& buf)
         // The data appears as - 
         //      
         //      {
-        //      "mimic": "ESP_49ECCD"
+        //      "mimics": 
+        //      [
+        //          ["ESP_49E3C5","ESP_49ECCD"]
+        //      ],
+        //      "len":1
         //      }
         //
         const size_t bufferSize = JSON_OBJECT_SIZE(1) + 20;
