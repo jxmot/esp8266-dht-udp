@@ -188,7 +188,7 @@ String sensorData;
     // Is this sensor up next for a reading?
     if(sensor.nextup < millis())
     {
-        // update the sensor data, if an error occured then 
+        // update the sensor data, if an error occurred then 
         // change the interval between retries... success?
         if(updateSensorData()) 
         {

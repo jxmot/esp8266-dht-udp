@@ -138,7 +138,7 @@ void startHeart()
     beatcount = 0;
     heartrate = getSensorInterval() * 4;
     Serial.println("heart started, beats @ "+String((float(heartrate/1000)/60))+" min");
-    sendStatus("INFO", "heartbeats @ "+String((float(heartrate/1000)/60))+" min");
+    sendStatus("HEART", "heartbeats @ "+String((float(heartrate/1000)/60))+" min("+heartrate+"ms)");
 }
 
 void heartBeat()
