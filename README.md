@@ -7,13 +7,15 @@ A temperature and humidity sensor using a DHT22/11 device and UDP to transmit th
 - [Details](#details)
   * [Operation](#operation)
     + [Network Traffic](#network-traffic)
-      - [Status Messages](#status-messages)
       - [Data Messages](#data-messages)
+      - [Status Messages](#status-messages)
+      - [Device Heartbeat](#device-heartbeat)
   * [Configuration](#configuration)
     + [File Naming Convention](#file-naming-convention)
     + [Application Configuration](#application-configuration)
     + [WiFi Configuration](#wifi-configuration)
     + [UDP Client Configuration](#udp-client-configuration)
+    + [Alternative UDP Client Configuration](#alternative-udp-client-configuration)
     + [Multi-cast UDP Configuration](#multi-cast-udp-configuration)
     + [Device Mimic](#device-mimic)
     + [Sensor Configuration](#sensor-configuration)
@@ -29,7 +31,6 @@ A temperature and humidity sensor using a DHT22/11 device and UDP to transmit th
   * [Run-time Configuration](#run-time-configuration)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 # History
 
@@ -53,6 +54,16 @@ It is the responsibility of that server to listen for data from the sensors and 
 
 The devices transmit two types of UDP traffic, *multi-cast UDP* and *UDP*. The multi-cast messages are intended for communicating device status to one or more listeners. The other messages are sent to a specific server and contain sensor data.
 
+#### Data Messages
+
+Here's an example of a typical data message - 
+
+* Device Sensor Data - `{"dev_id":"ESP_49ECF6","seq":2,"t":67.28,"h":26.20}`
+    * **`dev_id`** - The ID of the device, for the ESP8266 devices this is typically the _network ID_ of the ESP8266.
+    * **`seq`** - This sequence number is incremented every time the DHT-XX is queried for data. There _can be_ gaps in the sequence and it indicates that a reading has occurred but the amount of change was not sufficient to send a message. The _server_ can use it to aid in interpolation of values between readings, and for smoothing out graphs.
+    * **`t`** - The temperature in the scale (_F or C_) that was configured.
+    * **`h`** - The relative humidity
+
 #### Status Messages
 
 Here are some examples of the status messages that a sensor device might send - 
@@ -60,13 +71,23 @@ Here are some examples of the status messages that a sensor device might send -
 * Device successful start - `{"dev_id":"ESP_49ECF6","status":"APP_READY"}`
 * Device sensor error - `{"dev_id":"ESP_49ECF6","status":"SENSOR_ERROR","msg":"Too many NaN readings from sensor"}`
 * Device sensor recovery - `{"dev_id":"ESP_49ECF6","status":"SENSOR_RECOVER","msg":"Recovered after NaN from sensor"}`
-* Device heartbeat - **heartbeat, issue #5 info goes here**
 
-#### Data Messages
+#### Device Heartbeat
 
-Here's an example of a typical data message - 
+The primary purpose of the heartbeat is enhance the monitoring of the state of a sensor device. A heartbeat will occur when the temperature and humidity have not changed more than their delta for a period of time. 
 
-`{"dev_id":"ESP_49ECF6","seq":2,"t":67.28,"h":26.20}`
+The period of time that will pass between heartbeats is the *sensor read interval* times 4. For example, if the DHT-XX device is read every 5 minutes a heartbeat will occur every 20 minutes unless a data message is sent. The transmission of a data message will reset the heartbeat interval counter.
+
+There are several messages associated with the heartbeat - 
+
+* Heart Rate Announcement - `{"dev_id":"ESP_49ECF6","status":"HEART","msg":"heartbeats @ 5 min(300000ms)"}`
+    * Only sent once during start up & initialization. 
+* Heartbeat Pulse - `{"dev_id":"ESP_49ECF6","status":"TICK" | "TOCK","msg":"beatcount = 5"}`
+    * The `status` will alternate between `TICK` and `TOCK` each time the message is sent. The `beatcount` value is a counter of how many heartbeats have occurred to that point. **_This is an optional message, and it is typically disabled. To enable it change the value of_ `esp8266-dht-udp.ino:sendbeat` _to_ `true`_._**
+* Heartbeat Sensor Data - `{"dev_id":"ESP_49ECF6","seq":1539,"t":59.72,"h":35.70,"last":{"t":60.08,"h":36.20}}`
+    * Sent when a heartbeat occurs. There are two sets of temperature & humidity values. The first is the _current_ reading directly from the DHT-XX sensor. And the second, in the `last` object are the values that were sent in the last data message.
+    
+**NOTE :** The heartbeat can be disabled by commenting out `#define HEARTBEAT` in `esp8266-dht-udp.ino`.
 
 ## Configuration
 
@@ -112,8 +133,6 @@ To keep the contents of this file secure make a copy of it and prepend the under
 
 ### UDP Client Configuration
 
-**Issue #6 info goes here**
-
 The `data/clientcfg.dat` file contains one or more entries that each contain the IP address and port number of a UDP enabled server that the application can access. Here are the contents of the sample `clientcfg.dat` file -
 
 ```json
@@ -131,11 +150,21 @@ if(c_cfgdat->getServer("udp1", udpClient)) success = true;
 
 and change `"udp1"` to a different string as needed.
 
+The chosen configuration data is read and parsed into the `esp8266-udp.cpp:udpClient` object.  
+
 To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.data` file to access the correct file.
+
+### Alternative UDP Client Configuration
+
+The device has the ability to request the server's IP address and port number that it uses for UDP messages. It accomplishes this by broadcasting a `REQ_IP` status message. When received by the server it will respond directly to the device with its UDP address information.
+
+After the device receives the server's reply it will parse it into `esp8266-udp.cpp:udpClient` and over write any values set when the `data/clientcfg.dat` file was read and parsed.
+
+**NOTE :** This can be disabled by commenting out the line `#define QUERY_SERVER` in `esp8266-ino.cpp`.
 
 ### Multi-cast UDP Configuration
 
-The `data/multicfg.dat` file contains the IP address and port number for the intended multi-cast destination. Here are the contents of the `clientcfg.dat` file -
+The `data/multicfg.dat` file contains the IP address and port number for the intended multi-cast destination. Here are the contents of the file -
 
 ```json
 {
@@ -149,6 +178,8 @@ This file does not contain sensitive configuration data. So it is not necessary 
 ### Device Mimic
 
 **details for issue #7 go here**
+
+
 
 ### Sensor Configuration
 
@@ -172,7 +203,7 @@ The `data/sensorcfg.dat` file contains the configure the application for one of 
 * **`type`** - Sensor type, either `"DHT11"` or `"DHT22"`. At this time these are the only sensors supported.
 * **`pin`** - EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor. 
     * **NOTE** : This pin setting is ignored if an ESP-01 is used. On that platform GPIO2 will be used instead and is not configurable. See `sensor-dht.cpp` and look for `ARDUINO_ESP8266_ESP01` for the associated code.
-* **`scale`** - Temperature scale, this is used to select Fahrenheit or Celsius.
+* **`scale`** - Temperature scale, this is used to select **F**ahrenheit or **C**elsius.
 * **`interval`** - Sensor reading interval, this is the duration in milliseconds between subsequent sensor data readings.
 * **`error_interval`** - Sensor retry interval, this is the duration in milliseconds between subsequent sensor data readings when an error (*typically the sensor will return NaN*) occurs.
 * **`report`** - Reporting type, the current choices are `"ALL"` or `"CHG"`. Their meanings are - 
