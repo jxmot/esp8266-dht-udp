@@ -72,7 +72,7 @@ bool bRet = false;
 */
 bool ConnectWiFi::IsConnected()
 {
-    currwifi.isConnected = (WiFi.status() == WL_CONNECTED) ? true : false;
+    currwifi.isConnected = ((WiFi.status() == WL_CONNECTED) ? true : false);
     return(currwifi.isConnected);
 }
 
