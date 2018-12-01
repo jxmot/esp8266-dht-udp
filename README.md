@@ -85,7 +85,7 @@ There are several messages associated with the heartbeat -
 * Heartbeat Pulse - `{"dev_id":"ESP_49ECF6","status":"TICK" | "TOCK","msg":"beatcount = 5"}`
     * The `status` will alternate between `TICK` and `TOCK` each time the message is sent. The `beatcount` value is a counter of how many heartbeats have occurred to that point. **_This is an optional message, and it is typically disabled. To enable it change the value of_ `esp8266-dht-udp.ino:sendbeat` _to_ `true`_._**
 * Heartbeat Sensor Data - `{"dev_id":"ESP_49ECF6","seq":1539,"t":59.72,"h":35.70,"last":{"t":60.08,"h":36.20}}`
-    * Sent when a heartbeat occurs. There are two sets of temperature & humidity values. The first is the _current_ reading directly from the DHT-XX sensor. And the second, in the `last` object are the values that were sent in the last data message.
+    * Sent when a heartbeat occurs. There are two sets of temperature & humidity values. The first is the _current_ reading directly from the DHT-XX sensor. And the second, in the `last` object are the values that were sent in the last data message that was sent before the heartbeat.
     
 **NOTE :** The heartbeat can be disabled by commenting out `#define HEARTBEAT` in `esp8266-dht-udp.ino`.
 
