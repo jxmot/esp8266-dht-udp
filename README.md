@@ -177,9 +177,25 @@ This file does not contain sensitive configuration data. So it is not necessary 
 
 ### Device Mimic
 
-**details for issue #7 go here**
+The mimic feature is used for allowing for the replacement of a failed device with a new one, and having the new device "mimic" the `hostname` and device ID of the one it replaced. This become useful when there is a large amount of data that's been collected(*server side*) and it's indexed on the device ID.
 
+To enable mimic for a device:
 
+1. create a file named `_device_id.json`, where **`device_id`** is the ID of the current device.
+**NOTE:** The file name **must** begin with an underscore "_"! For example `_ESP_BEEFEE.json`.
+
+2. edit the file and add:
+```
+{
+"mimic": "ESP_12AB34"
+}
+```
+
+Where `"ESP_12AB34"` is the hostname of the device that is being replaced.
+
+3. save the file and upload to the device
+
+4. when the sketch runs it will look for a json file where it's own id is in in the file name. If found it will take the ID from the file and replace it's current ID. It will use that ID when sending statuses and data. 
 
 ### Sensor Configuration
 
