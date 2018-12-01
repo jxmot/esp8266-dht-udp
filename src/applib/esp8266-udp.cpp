@@ -4,7 +4,7 @@
 
     To Do :
 
-        * support mulitple UDP server endpoints simultaneously for our client
+        * support multiple UDP server endpoints simultaneously for our client
         * make ACK requirement configurable per endpoints
         * 
 
