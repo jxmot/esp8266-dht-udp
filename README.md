@@ -97,7 +97,7 @@ The configuration files are kept in the `data` folder.
 
 ### File Naming Convention
 
-Some configuration files may contain *sensitive* information that should not be placed into a public repository. In order to prevent them from getting into the repository their filenames begin with an underscore. This is accomplished with an entry in this repository's `.gitignore` file. However there are incomplete configuration files provided that to not have the underscore in their names.
+Some configuration files may contain *sensitive* information that should not be placed into a public repository. In order to prevent them from getting into the repository their filenames begin with an underscore. This is accomplished with an entry in this repository's `.gitignore` file. However there are example configuration files provided that to not have the underscore in their names.
 
 ### Application Configuration
 

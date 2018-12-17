@@ -29,7 +29,8 @@ void heartBeat();
 bool sendbeat = false;
 // toggles on every beat
 bool pulse = true;
-// default rate is 15 sec (very short!)
+// default rate is 15 sec (for testing, but 
+// result in 1 min beats due to the '* 4')
 // uses (sensor interval * 4) in startHeart()
 unsigned long heartrate = 15000;
 // time of last heartbeat, in milliseconds
