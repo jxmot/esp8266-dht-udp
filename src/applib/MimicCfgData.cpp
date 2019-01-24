@@ -1,7 +1,8 @@
 /* ************************************************************************ */
 /*
-    MimicCfgData.cpp - Provides the port and any additional info needed to
-    send a UDP multi-cast. 
+    MimicCfgData.cpp - Provides the device ID that this particular device
+    will mimic. The purpose is to allow a device to replace another and 
+    pretend to be the device it replaced.
 */
 #include "MimicCfgData.h"
 #include <ArduinoJson.h>
@@ -44,12 +45,9 @@ void MimicCfgData::parseJSON(std::unique_ptr<char[]>& buf)
         // The data appears as - 
         //      
         //      {
-        //      "mimics": 
-        //      [
-        //          ["ESP_49E3C5","ESP_49ECCD"]
-        //      ],
-        //      "len":1
+        //      "mimic": "ESP_49E000"
         //      }
+        //
         //
         const size_t bufferSize = JSON_OBJECT_SIZE(1) + 20;
         StaticJsonBuffer<bufferSize> jsonBuffer;

@@ -619,6 +619,8 @@ bool queryServer(String, String &);
 
 /*
     send a UDP multi-cast to any interested clients
+        - OR - 
+    broadcast a request for the UDP server's IP address
 */
 void ready()
 {
