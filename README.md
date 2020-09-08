@@ -101,16 +101,16 @@ Some configuration files may contain *sensitive* information that should not be 
 
 ### Application Configuration
 
-This file is the first configuration file read by the application. It provides a location where the remaining configuration files are listed. It also contains the *application name*, and a boolean value for enabling or disabling run-time output to the serial port. Here are the contents of the sample `appcfg.dat` file -
+This file is the first configuration file read by the application. It provides a location where the remaining configuration files are listed. It also contains the *application name*, and a boolean value for enabling or disabling run-time output to the serial port. Here are the contents of the sample `appcfg.json` file -
 
 ```json
 {
     "appname":"Your App Name Here",
     "debugmute":false,
-    "wificonfig":"/wificfg.dat",
-    "clientconfig":"/clientcfg.dat",
-    "mcastconfig":"/multicfg.dat",
-    "sensorconfig":"/sensorcfg.dat"
+    "wificonfig":"/wificfg.json",
+    "clientconfig":"/clientcfg.json",
+    "mcastconfig":"/multicfg.json",
+    "sensorconfig":"/sensorcfg.json"
 }
 ```
 
@@ -118,7 +118,7 @@ To keep the contents of this file secure make a copy of it and prepend the under
 
 ### WiFi Configuration
 
-The `data/wificfg.dat` file contains one or more WiFi SSIDs and passwords. Here are the contents of the sample `wificfg.dat` file -
+The `data/wificfg.json` file contains one or more WiFi SSIDs and passwords. Here are the contents of the sample `wificfg.json` file -
 
 ```json
 { "apoints":[
@@ -129,11 +129,11 @@ The `data/wificfg.dat` file contains one or more WiFi SSIDs and passwords. Here 
 
 The code responsible for connecting to an access point will multiple attempts. This is described in the README of the [ESP8266-config-data-V2](<https://github.com/jxmot/ESP8266-config-data-V2>) repository. 
 
-To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.data` file to access the correct file.
+To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.json` file to access the correct file.
 
 ### UDP Client Configuration
 
-The `data/clientcfg.dat` file contains one or more entries that each contain the IP address and port number of a UDP enabled server that the application can access. Here are the contents of the sample `clientcfg.dat` file -
+The `data/clientcfg.json` file contains one or more entries that each contain the IP address and port number of a UDP enabled server that the application can access. Here are the contents of the sample `clientcfg.json` file -
 
 ```json
 {
@@ -152,19 +152,19 @@ and change `"udp1"` to a different string as needed.
 
 The chosen configuration data is read and parsed into the `esp8266-udp.cpp:udpClient` object.  
 
-To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.data` file to access the correct file.
+To keep the contents of this file secure make a copy of it and prepend the underscore to its name. Be sure to edit your `data/_appcfg.json` file to access the correct file.
 
 ### Alternative UDP Client Configuration
 
 The device has the ability to request the server's IP address and port number that it uses for UDP messages. It accomplishes this by broadcasting a `REQ_IP` status message. When received by the server it will respond directly to the device with its UDP address information.
 
-After the device receives the server's reply it will parse it into `esp8266-udp.cpp:udpClient` and over write any values set when the `data/clientcfg.dat` file was read and parsed.
+After the device receives the server's reply it will parse it into `esp8266-udp.cpp:udpClient` and over write any values set when the `data/clientcfg.json` file was read and parsed.
 
 **NOTE :** This can be disabled by commenting out the line `#define QUERY_SERVER` in `esp8266-ino.cpp`.
 
 ### Multi-cast UDP Configuration
 
-The `data/multicfg.dat` file contains the IP address and port number for the intended multi-cast destination. Here are the contents of the file -
+The `data/multicfg.json` file contains the IP address and port number for the intended multi-cast destination. Here are the contents of the file -
 
 ```json
 {
@@ -199,7 +199,7 @@ Where `"ESP_12AB34"` is the hostname of the device that is being replaced.
 
 ### Sensor Configuration
 
-Here are the contents of the `sensorcfg.dat` file -
+Here are the contents of the `sensorcfg.json` file -
 
 ```json
 {
@@ -214,7 +214,7 @@ Here are the contents of the `sensorcfg.dat` file -
 }
 ```
 
-The `data/sensorcfg.dat` file contains the configure the application for one of two specific temperature/humdity sensors - 
+The `data/sensorcfg.json` file contains the configure the application for one of two specific temperature/humdity sensors - 
 
 * **`type`** - Sensor type, either `"DHT11"` or `"DHT22"`. At this time these are the only sensors supported.
 * **`pin`** - EPS8266 pin number, this is the pin number of the ESP8266 that is used for communication with the DHT sensor. 
@@ -236,7 +236,7 @@ I experimented with OTA with limited results. And the device would not appear re
 
 ### Configuration
 
-The OTA configuration is located in `data/otacfg.dat`. At this time only the `otadur` is used. It is the amount of time that the device will wait for OTA to begin *before* it starts the application.
+The OTA configuration is located in `data/otacfg.json`. At this time only the `otadur` is used. It is the amount of time that the device will wait for OTA to begin *before* it starts the application.
 
 ## Schematic and Build Details
 
@@ -282,17 +282,17 @@ The purpose of the changes was to allow the DHT class to be instantiated before 
 
 ## Application Version
 
-Add a "version" member to the `appcfg.dat` file. This would contain a string formatted as `"0.0.0"` using the typical "major"."minor"."patch" scheme. For example - 
+Add a "version" member to the `appcfg.json` file. This would contain a string formatted as `"0.0.0"` using the typical "major"."minor"."patch" scheme. For example - 
 
 ```json
 {
     "appname":"Your App Name Here",
     "appver":"0.1.0",
     "debugmute":false,
-    "wificonfig":"/wificfg.dat",
-    "clientconfig":"/clientcfg.dat",
-    "mcastconfig":"/multicfg.dat",
-    "sensorconfig":"/sensorcfg.dat"
+    "wificonfig":"/wificfg.json",
+    "clientconfig":"/clientcfg.json",
+    "mcastconfig":"/multicfg.json",
+    "sensorconfig":"/sensorcfg.json"
 }
 ```
 
@@ -302,20 +302,20 @@ In addition single letters such as "`b`" could be added to the end of the versio
 
 To accommodate devices with configuration differences the following changes will be made - 
 
-* One or more configuration files will can be named using the ESP-01 device *hostname*. For example in `appcfg.dat` - 
+* One or more configuration files will can be named using the ESP-01 device *hostname*. For example in `appcfg.json` - 
 
 ```json
 {
     "appname":"Your App Name Here",
     "debugmute":false,
-    "wificonfig":"/wificfg.dat",
-    "clientconfig":"/clientcfg.dat",
-    "mcastconfig":"/multicfg.dat",
-    "sensorconfig":"/sensorcfg-ESP_49F542.dat"
+    "wificonfig":"/wificfg.json",
+    "clientconfig":"/clientcfg.json",
+    "mcastconfig":"/multicfg.json",
+    "sensorconfig":"/sensorcfg-ESP_49F542.json"
 }
 ```
 
-Where `"sensorconfig":"/sensorcfg-ESP_49F542.dat"` would specifiy the sensor config file for a specific device. The addtion of `ESP_49F542` would match the *hostname* of a specific device.
+Where `"sensorconfig":"/sensorcfg-ESP_49F542.json"` would specifiy the sensor config file for a specific device. The addtion of `ESP_49F542` would match the *hostname* of a specific device.
 
 ## Run-time Configuration
 
