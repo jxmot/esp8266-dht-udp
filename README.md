@@ -329,4 +329,4 @@ Commands could be issued from the server that would alter one or more configurat
 * *TBD*
 
 ---
-<img src="http://webexperiment.info/extcounter/mdcount.php?id=">
+<img src="http://webexperiment.info/extcounter/mdcount.php?id=esp8266-dht-udp">
